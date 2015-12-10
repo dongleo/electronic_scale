@@ -1,21 +1,21 @@
 <ion-view title="绑定设备">
-  <ion-nav-bar class="bar-stable">
-    <ion-nav-back-button class="button-icon icon">取消</ion-nav-back-button>
-    <!--<ion-nav-buttons side="left">
-      <button class="button button-icon icon" ng-click="cancel()">取消</button>
-    </ion-nav-buttons>-->
-    <ion-nav-buttons side="right">
-      <button class="button button-icon icon" ng-disabled="isBleSelected()" ng-click="ok()">确定</button>
-    </ion-nav-buttons>
-  </ion-nav-bar>
-  <ion-content padding="false" class="has-header">
-    <ion-list>
-      <ion-radio ng-repeat="ble in bleList"
-                 ng-value="ble.id"
-                 ng-model="selectedBle"
-                 ng-change="selectedChange(ble)">
-        {{ble.name}}
-      </ion-radio>
-    </ion-list>
-  </ion-content>
+    <ion-nav-bar class="bar-stable">
+        <ion-nav-back-button class="button-icon icon">取消</ion-nav-back-button>
+        <!--<ion-nav-buttons side="left">
+          <button class="button button-icon icon" ng-click="cancel()">取消</button>
+        </ion-nav-buttons>-->
+        <ion-nav-buttons side="right">
+            <button class="button button-icon icon" ng-disabled="isBleSelected()" ng-click="ok()">确定</button>
+        </ion-nav-buttons>
+    </ion-nav-bar>
+    <ion-content padding="false" class="has-header">
+        <ion-list>
+            <ion-radio ng-repeat="ble in bleList"
+                       ng-value="ble.id"
+                       ng-model="selectedBle"
+                       ng-change="selectedChange(ble)">
+                {{ble.name}}
+            </ion-radio>
+        </ion-list>
+    </ion-content>
 </ion-view>
