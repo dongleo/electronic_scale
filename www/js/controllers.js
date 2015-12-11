@@ -10,7 +10,7 @@ controllers.value('Conf', {
 
 controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ionicLoading, StorageHelper, AccountService) {
     if (StorageHelper.get('hasLogin')) {
-        $state.go("index");
+        $state.go("tab.check");
         return;
     }
     $scope.data = {};
@@ -106,7 +106,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
     })
 
-    .controller('indexCtrl', function ($scope, $state, $ionicPopup, $cordovaBLE, PhyIndexService, StorageHelper, BleManager, Conf) {
+    .controller('checkCtrl', function ($scope, $ionicPlatform, $state, $ionicPopup, $cordovaBLE, PhyIndexService, StorageHelper, BleManager, Conf) {
         $scope.data = {
             weight: StorageHelper.get('weight')
         };
@@ -115,51 +115,65 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             $state.go('edit');
         };
         $scope.addBle = function () {
-            $state.go('blelist');
+            $state.go('tab.blelist');
         };
         $scope.init = function () {
-            var bleList = BleManager.getBleList();
-            var idx = 0;
-
-            function failureCallback() {
-                if (idx < bleList.length)
-                    $scope.connect(bleList[idx++], failureCallback);
+            $scope.bleList = BleManager.getBleList();
+            $scope.selectedBle = BleManager.selectedBle;
+            $ionicPopup.alert({
+                title: 'init',
+                template: JSON.stringify($scope.bleList)
+            });
+            if ($scope.selectedBle) {
+                $scope.connect($scope.selectedBle, $scope.connectFail);
+            } else {
+                $scope.scan();
             }
-
-            if (bleList.length > 0) {
-                $scope.connect(bleList[idx++], failureCallback);
-            }
+        };
+        $scope.scan = function() {
+            //$cordovaBLE.scan([], 10).then(function (device) {
+            ble.scan([], 10, function (device) {
+                $ionicPopup.alert({
+                    title: 'scan',
+                    template: 'scan'
+                });
+                if (BleManager.exist(device)) {
+                    $scope.connect(device, $scope.connectFail);
+                }
+            }, function() {});
+        };
+        $scope.connect = function (ble, failure) {
+            $cordovaBLE.connect(ble.id).then(function () {
+                $cordovaBLE.startNotification(ble.id, Conf.SERVICE_UUID, Conf.CHARACTERISTIC_UUID)
+                    .then($scope.receiveData);
+            }, failure);
         };
         $scope.receiveData = function (data) {
             $scope.bleData = data;
             $scope.data.weight = (parseInt(data[3]) << 8) | parseInt(data[4]);
             $scope.data.weight /= 10;
 
+            $ionicPopup.alert({
+                title: '收到信息',
+                template: '体重：' + $scope.data.weight
+            });
+
             StorageHelper.set('weight', $scope.data.weight);
 
             var account = StorageHelper.getObject('userData');
             PhyIndexService.submit({accountId: account.accountId, weight: $scope.data.weight})
         };
-        $scope.connect = function (ble, failure) {
-            $ionicPopup.alert({
-                title: 'data',
-                template: JSON.stringify(ble)
-            });
-            $cordovaBLE.connect(ble.id).then(function () {
-                $ionicPopup.alert({
-                    title: 'data',
-                    template: 'connect success'
-                });
-                $cordovaBLE.startNotification(ble.id, Conf.SERVICE_UUID, Conf.CHARACTERISTIC_UUID)
-                    .then($scope.receiveData);
-            }, failure);
-        };
+        $scope.connectFail = function() {};
         $scope.refreshData = function () {
             //TODO 动画效果
         };
-        $scope.$on('$ionicView.beforeEnter', $scope.init);
-
-        $scope.init();
+        $scope.$on('$ionicView.beforeEnter', function() {
+            $scope.selectedBle = BleManager.selectedBle;
+            if ($scope.selectedBle) {
+                $scope.connect($scope.selectedBle, $scope.connectFail);
+            }
+        });
+        $ionicPlatform.ready($scope.init);
     })
 
     .controller('bleListCtrl', function ($scope, $state, $ionicPlatform, $ionicLoading, $ionicPopup, $cordovaBLE, BleManager) {
@@ -184,6 +198,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
         $scope.scan = function () {
             //TODO $cordovaBLE收不到回调
+            //$cordovaBLE.scan([], 10).then(function (device) {
             ble.scan([], 10, function (device) {
                 $ionicLoading.hide();
                 $scope.scanCallback(device);
@@ -193,7 +208,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
         $scope.ok = function () {
             BleManager.addBle($scope.selectedBle);
-            $state.go('index');
+            $state.go('tab.check');
         };
         $ionicPlatform.ready(function () {
             $ionicLoading.show({
@@ -262,7 +277,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                             title: '提示',
                             template: '修改用户信息成功！'
                         }).then(function () {
-                            $state.go("index");
+                            $state.go("tab.check");
                         });
                     } else {
                         $ionicPopup.alert({

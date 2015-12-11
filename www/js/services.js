@@ -71,8 +71,8 @@ services.service('StorageHelper', function ($window) {
         return {
             submit: function (data, token) {
                 $ionicPopup.alert({
-                    title: 'hehe',
-                    template: 'submit'
+                    title: 'submit',
+                    template: 'submit data'
                 });
                 return $http({
                     method: 'POST',
@@ -94,6 +94,16 @@ services.service('StorageHelper', function ($window) {
         }
 
         manager.addBle = function (ble) {
+            if (!manager.exist()) {
+                manager.bleList.push(ble);
+            }
+            StorageHelper.setObject('bleList', manager.bleList);
+            manager.selectedBle = ble;
+        };
+        manager.getBleList = function () {
+            return manager.bleList;
+        };
+        manager.exist = function(ble) {
             var exist = false;
             for (var i = 0; i < manager.bleList.length; i++) {
                 if (manager.bleList[i].id == ble.id) {
@@ -101,13 +111,7 @@ services.service('StorageHelper', function ($window) {
                     break;
                 }
             }
-            if (!exist) {
-                manager.bleList.push(ble);
-            }
-            StorageHelper.setObject('bleList', manager.bleList);
-        };
-        manager.getBleList = function () {
-            return manager.bleList;
+            return exit;
         };
         return manager;
     });

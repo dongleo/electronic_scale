@@ -15,28 +15,68 @@ angular.module('app.routes', [])
                 templateUrl: 'templates/signup.html',
                 controller: 'signupCtrl'
             })
-            .state('index', {
-                url: '/index',
-                templateUrl: 'templates/index.html',
-                controller: 'indexCtrl'
-            })
             .state('edit', {
                 url: '/edit',
                 templateUrl: 'templates/edit.html',
                 controller: 'editCtrl'
             })
-            .state('blelist', {
+            .state('tab', {
+                url: "/tab",
+                abstract: true,
+                templateUrl: "templates/tabs.html"
+            })
+            .state('tab.check', {
+                url: '/check',
+                views: {
+                    'tab-check': {
+                        templateUrl: 'templates/check.html',
+                        controller: 'checkCtrl'
+                    }
+                }
+            })
+            .state('tab.blelist', {
                 url: '/blelist',
-                templateUrl: 'templates/ble-list.html',
-                controller: 'bleListCtrl'
+                views: {
+                    'tab-check': {
+                        templateUrl: 'templates/ble-list.html',
+                        controller: 'bleListCtrl'
+                    }
+                }
+            })
+            .state('tab.charts', {
+                url: '/charts',
+                views: {
+                    'tab-charts': {
+                        templateUrl: 'templates/charts.html',
+                        controller: 'chartsCtrl'
+                    }
+                }
+            })
+            .state('tab.about', {
+                url: '/about',
+                views: {
+                    'tab-about': {
+                        templateUrl: 'templates/about.html',
+                        controller: 'aboutCtrl'
+                    }
+                }
+            })
+            .state('tab.account', {
+                url: '/account',
+                views: {
+                    'tab-account': {
+                        templateUrl: 'templates/account.html',
+                        controller: 'accountCtrl'
+                    }
+                }
             });
 
         // if none of the above states are matched, use this as the fallback
         //TODO 无法注入StorageHelper
         /*if (localStorage.hasLogin) {
-         $urlRouterProvider.otherwise('/index');
+         $urlRouterProvider.otherwise('/check');
          } else {
          $urlRouterProvider.otherwise('/login');
          }*/
-        $urlRouterProvider.otherwise('/index');
+        $urlRouterProvider.otherwise('/tab/check');
     });
