@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <title></title>
 
     <style>
-      .angular-google-map-container {
-          width: 100%;
-          height: 504px;
-      }
+        .angular-google-map-container {
+            width: 100%;
+            height: 504px;
+        }
     </style>
-
+    <link rel="stylesheet" href="lib/angular-chart.js/dist/angular-chart.css">
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
     <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script type="text/javascript" src="lib/Chart.js/Chart.js"></script>
+    <script src="lib/angular-chart.js/dist/angular-chart.js"></script>
 
     <script src="lib/ngCordova/dist/ng-cordova.js"></script>
     <script src="cordova.js"></script>
@@ -31,15 +33,15 @@
     <script src="js/services.js"></script>
     <script src="js/directives.js"></script>
 
-  </head>
-  <body ng-app="app" animation="slide-left-right-ios7">
-  <div>
-      <div>
-          <ion-nav-bar class="bar-positive">
-              <!--<ion-nav-back-button class="button-icon icon ion-ios-arrow-back">Back</ion-nav-back-button>-->
-          </ion-nav-bar>
-          <ion-nav-view></ion-nav-view>
-      </div>
+</head>
+<body ng-app="app" animation="slide-left-right-ios7">
+<div>
+    <div>
+        <ion-nav-bar class="bar-positive">
+            <!--<ion-nav-back-button class="button-icon icon ion-ios-arrow-back">Back</ion-nav-back-button>-->
+        </ion-nav-bar>
+        <ion-nav-view></ion-nav-view>
+    </div>
 </div>
-  </body>
+</body>
 </html>

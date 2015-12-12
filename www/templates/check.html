@@ -8,12 +8,43 @@
         </ion-nav-buttons>
     </ion-nav-bar>
     <ion-content padding="false" class="has-header">
-        <div>
-            <p>
-                Add some
-                <b>HTML</b>for
-                <u>flavor</u>
-            </p>
+        <div style="width: 60%;margin: 10px auto 0;">
+            <canvas id="doughnut" class="chart chart-doughnut" width="100%"
+                    chart-data="chartData" chart-labels="labels" chart-options="chartOptions">
+            </canvas>
+            <div style="position:absolute;left:0px;top:-0.5em;display:inline-block;margin-top:50%;width:100%;z-index:100;font-size: 3em;text-align: center;color:#0898FF">
+                90分
+            </div>
+        </div>
+        <div style="width:100%;/*height:600px*/clear: both;">
+            <div id="container" style="/*height:600px;*/width:100%;">
+            </div>
+
+        </div>
+        <div style="float:left;width:100%;font-size:1.6em;/*padding-top:100px*/; line-height: 1em;">
+            <div style="width:33%;text-align:center;float:left;color:#68C4F0">
+                <strong>
+                    70.0kg<br/>
+                    体重↑
+                </strong>
+            </div>
+            <div style="width:33%;text-align:center;float:left;color:#EDC855">
+                <strong>
+                    64.5%<br/>
+                    水分↓
+                </strong>
+            </div>
+            <div style="width:33%;text-align:center;float:left;color:#D46795">
+                <strong>
+                    16.1<br/>
+                    脂肪↑
+                </strong>
+            </div>
+            <!--<canvas class="canvas"></canvas>-->
+        </div>
+        <div style="float:left;width:100%;margin: 20px 0 10px;font-size:1.6em;text-align:center;color:#68C4F0; line-height: 1em;">
+            小宝恭喜您<br/>
+            您成功击败了<span style="color:#FF0404;font-size:1.2em">91.4%</span>的用户,太强悍了
         </div>
     </ion-content>
 </ion-view>

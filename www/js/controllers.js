@@ -110,6 +110,11 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         $scope.data = {
             weight: StorageHelper.get('weight')
         };
+        $scope.labels = ["Download Sales", "In-Store Sales"];
+        $scope.chartData = [300, 500];
+        $scope.chartOptions = {
+            percentageInnerCutout : 80
+        };
 
         $scope.goToEdit = function () {
             $state.go('edit');
@@ -129,6 +134,10 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             } else {
                 $scope.scan();
             }
+            $ionicPopup.alert({
+                title: 'jquery',
+                template: $
+            })
         };
         $scope.scan = function() {
             //$cordovaBLE.scan([], 10).then(function (device) {
