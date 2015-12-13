@@ -7,16 +7,16 @@ services.value('EsConfig', {
 services.service('StorageHelper', function ($window) {
     return {
         set: function (key, value) {
-            $window.localStorage[key] = value;
+            $window.localStorage.setItem(key, value);
         },
         get: function (key, defaultValue) {
-            return $window.localStorage[key] || defaultValue;
+            return $window.localStorage.getItem(key) || defaultValue;
         },
         setObject: function (key, value) {
-            $window.localStorage[key] = angular.toJson(value);
+            $window.localStorage.setItem(key, angular.toJson(value));
         },
         getObject: function (key) {
-            return angular.fromJson($window.localStorage[key] || '{}');
+            return angular.fromJson($window.localStorage.getItem(key) || '{}');
         },
         remove: function (key) {
             $window.localStorage.removeItem(key);
@@ -85,7 +85,7 @@ services.service('StorageHelper', function ($window) {
             }
         }
     })
-    .service('BleManager', function (StorageHelper) {
+    .service('BleManager', function ($ionicPopup, StorageHelper) {
         var manager = this;
 
         manager.bleList = StorageHelper.getObject('bleList');
@@ -94,7 +94,7 @@ services.service('StorageHelper', function ($window) {
         }
 
         manager.addBle = function (ble) {
-            if (!manager.exist()) {
+            if (!manager.exist(ble)) {
                 manager.bleList.push(ble);
             }
             StorageHelper.setObject('bleList', manager.bleList);
@@ -103,7 +103,7 @@ services.service('StorageHelper', function ($window) {
         manager.getBleList = function () {
             return manager.bleList;
         };
-        manager.exist = function(ble) {
+        manager.exist = function (ble) {
             var exist = false;
             for (var i = 0; i < manager.bleList.length; i++) {
                 if (manager.bleList[i].id == ble.id) {
@@ -111,7 +111,7 @@ services.service('StorageHelper', function ($window) {
                     break;
                 }
             }
-            return exit;
+            return exist;
         };
         return manager;
     });

@@ -111,10 +111,15 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             weight: StorageHelper.get('weight')
         };
         $scope.labels = ["Download Sales", "In-Store Sales"];
-        $scope.chartData = [300, 500];
+        $scope.chartData = [900, 100];
         $scope.chartOptions = {
-            percentageInnerCutout : 80
+            percentageInnerCutout: 80,
+            showTooltips: false
         };
+
+        function formatNumber(number) {
+            return number < 0 ? (number + 256) : number;
+        }
 
         $scope.goToEdit = function () {
             $state.go('edit');
@@ -134,12 +139,8 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             } else {
                 $scope.scan();
             }
-            $ionicPopup.alert({
-                title: 'jquery',
-                template: $
-            })
         };
-        $scope.scan = function() {
+        $scope.scan = function () {
             //$cordovaBLE.scan([], 10).then(function (device) {
             ble.scan([], 10, function (device) {
                 $ionicPopup.alert({
@@ -149,7 +150,8 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 if (BleManager.exist(device)) {
                     $scope.connect(device, $scope.connectFail);
                 }
-            }, function() {});
+            }, function () {
+            });
         };
         $scope.connect = function (ble, failure) {
             $cordovaBLE.connect(ble.id).then(function () {
@@ -159,7 +161,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
         $scope.receiveData = function (data) {
             $scope.bleData = data;
-            $scope.data.weight = (parseInt(data[3]) << 8) | parseInt(data[4]);
+            $scope.data.weight = (formatNumber(parseInt(data[3])) << 8) | formatNumber(parseInt(data[4]));
             $scope.data.weight /= 10;
 
             $ionicPopup.alert({
@@ -172,11 +174,13 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             var account = StorageHelper.getObject('userData');
             PhyIndexService.submit({accountId: account.accountId, weight: $scope.data.weight})
         };
-        $scope.connectFail = function() {};
+
+        $scope.connectFail = function () {
+        };
         $scope.refreshData = function () {
             //TODO 动画效果
         };
-        $scope.$on('$ionicView.beforeEnter', function() {
+        $scope.$on('$ionicView.beforeEnter', function () {
             $scope.selectedBle = BleManager.selectedBle;
             if ($scope.selectedBle) {
                 $scope.connect($scope.selectedBle, $scope.connectFail);
@@ -235,11 +239,15 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         });
     })
 
-    .controller('editCtrl', function ($scope, $state, $ionicPopup, $ionicLoading, StorageHelper, Conf, AccountService) {
+    .controller('editCtrl', function ($scope, $state, $ionicHistory, $ionicPopup, $ionicLoading, StorageHelper, Conf, AccountService) {
         $scope.heightDic = Conf.heightDic;
         $scope.waistlineDic = Conf.waistlineDic;
         $scope.data = StorageHelper.getObject('userData');
         $scope.tel = parseInt($scope.data.tel);
+
+        $scope.cancel = function () {
+            $ionicHistory.goBack();
+        };
 
         $scope.edit = function () {
             $scope.data.tel = $scope.tel;
@@ -317,4 +325,8 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 }
             });
         }
+    })
+
+    .controller('accountCtrl', function ($scope) {
+
     });
