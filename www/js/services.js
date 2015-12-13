@@ -85,14 +85,13 @@ services.service('StorageHelper', function ($window) {
             }
         }
     })
-    .service('BleManager', function ($ionicPopup, StorageHelper) {
+    .service('BleManager', function (StorageHelper) {
         var manager = this;
 
         manager.bleList = StorageHelper.getObject('bleList');
-        if (!(manager instanceof Array)) {
+        if (!(manager.bleList instanceof Array)) {
             manager.bleList = [];
         }
-
         manager.addBle = function (ble) {
             if (!manager.exist(ble)) {
                 manager.bleList.push(ble);
