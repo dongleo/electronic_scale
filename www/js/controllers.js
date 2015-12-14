@@ -130,10 +130,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         $scope.init = function () {
             $scope.bleList = BleManager.getBleList();
             $scope.selectedBle = BleManager.selectedBle;
-            $ionicPopup.alert({
-                title: 'init',
-                template: JSON.stringify($scope.bleList)
-            });
+
             if ($scope.selectedBle) {
                 $scope.connect($scope.selectedBle, $scope.connectFail);
             } else {
@@ -189,7 +186,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         $ionicPlatform.ready($scope.init);
     })
 
-    .controller('bleListCtrl', function ($scope, $state, $ionicPlatform, $ionicLoading, $ionicPopup, $cordovaBLE, BleManager) {
+    .controller('bleListCtrl', function ($scope, $state, $ionicPlatform, $ionicLoading, $ionicPopup, $timeout, $cordovaBLE, BleManager) {
         $scope.bleList = [];
         $scope.isBleSelected = function () {
             return $scope.selectedBle == undefined || $scope.selectedBle == null;
@@ -218,6 +215,11 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             }, function () {
                 $ionicLoading.hide();
             });
+            $timeout(function() {
+                ble.stopScan(function() {
+                    $ionicLoading.hide();
+                });
+            }, 10000);
         };
         $scope.ok = function () {
             BleManager.addBle($scope.selectedBle);
