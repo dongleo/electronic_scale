@@ -107,9 +107,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
     })
 
     .controller('checkCtrl', function ($scope, $ionicPlatform, $state, $ionicPopup, $cordovaBLE, PhyIndexService, StorageHelper, BleManager, Conf) {
-        $scope.data = {
-            weight: StorageHelper.get('weight')
-        };
+        $scope.data = StorageHelper.getObject('userData');
         $scope.labels = ["Download Sales", "In-Store Sales"];
         $scope.chartData = [900, 100];
         $scope.chartOptions = {
@@ -166,10 +164,9 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 template: '体重：' + $scope.data.weight
             });
 
-            StorageHelper.set('weight', $scope.data.weight);
+            StorageHelper.setObject('userData', $scope.data);
 
-            var account = StorageHelper.getObject('userData');
-            PhyIndexService.submit({accountId: account.accountId, weight: $scope.data.weight})
+            PhyIndexService.submit($scope.data)
         };
 
         $scope.connectFail = function () {
