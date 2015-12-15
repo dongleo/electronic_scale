@@ -158,6 +158,8 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             $scope.bleData = data;
             $scope.data.weight = (formatNumber(parseInt(data[3])) << 8) | formatNumber(parseInt(data[4]));
             $scope.data.weight /= 10;
+            $scope.data.bmi = PhyIndexService.calcBMI($scope.data);
+            $scope.data.fatRatio = PhyIndexService.calcFatRatio($scope.data);
 
             $ionicPopup.alert({
                 title: '收到信息',

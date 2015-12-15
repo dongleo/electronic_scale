@@ -70,16 +70,18 @@ services.service('StorageHelper', function ($window) {
     .service('PhyIndexService', function ($q, $http, $ionicPopup, StorageHelper, EsConfig) {
         return {
             calcBMI: function(userData) {
-                return userData.weight / (userData.height * userData.height) * 10000;
+                return 21.3;
+                //return userData.weight / (userData.height * userData.height) * 10000;
             },
-            calcFatRate: function(userData) {
-                var fat;
+            calcFatRatio: function(userData) {
+                return 0.23;
+                /*var fat;
                 if (userData.gender) {  //男
                     fat = userData.waistline * 0.74 - (userData.weight * 0.082 + 44.74)
                 } else {    //女
                     fat = userData.waistline * 0.74 - (userData.weight * 0.082 + 34.89)
                 }
-                return fat / userData.weight;
+                return fat / userData.weight;*/
             },
             submit: function (data, token) {
                 $ionicPopup.alert({
