@@ -1,7 +1,7 @@
 {
-  "name": "%E6%99%BA%E8%83%BD%E7%94%B5%E5%AD%90%E7%A7%A4",
+  "name": "诗琳美体脂秤",
   "version": "1.1.1",
-  "description": "智能电子秤: An Ionic project",
+  "description": "诗琳美体脂秤",
   "dependencies": {
     "gulp": "^3.5.6",
     "gulp-sass": "^2.0.4",
