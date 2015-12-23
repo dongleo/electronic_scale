@@ -1,1 +1,65 @@
-/* Empty. Add your own CSS if you like */
+.idx_container {
+    margin: 0 15px 20px;
+    font-size: 0;
+}
+
+.idx_wrapper {
+    /*float: left;*/
+    display: inline-block;
+    width: 33%;
+    font-size: 16px;
+}
+
+.idx_circle {
+    position: relative;
+    width: 75px;
+    height: 75px;
+    margin: 0 auto;
+    border-radius: 50%;
+}
+
+.idx_content {
+    position: absolute;
+    top: 15px;
+    /*margin-top: -1em;*/
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+}
+
+.idx_weight {
+    color: #EDC855;
+    border: 3px solid #EDC855;
+}
+
+.idx_bmi {
+    color: #68C4F0;
+    border: 3px solid #68C4F0;
+}
+
+.idx_fat {
+    color: #D46795;
+    border: 3px solid #D46795;
+}
+
+.msg_title {
+    width: 100%;
+    margin: 20px 0 10px;
+    font-size: 1.8em;
+    text-align: center;
+    color: #015dae;
+}
+
+.msg_content {
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 1.6em;
+    line-height: 1.1em;
+    text-align: center;
+    color: #015dae;
+}
+
+.msg_rate {
+    color: #FF0404;
+    font-weight: bold;
+}

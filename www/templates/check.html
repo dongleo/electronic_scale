@@ -21,29 +21,38 @@
             </div>
 
         </div>
-        <div style="float:left;width:100%;font-size:1.6em;/*padding-top:100px*/; line-height: 1em;">
-            <div style="width:33%;text-align:center;float:left;color:#68C4F0">
-                <strong>
-                    {{data.weight}}kg<br/>
-                    体重↑
-                </strong>
+        <div class="idx_container">
+            <div class="idx_wrapper">
+                <div class="idx_circle idx_weight">
+                    <span class="idx_content">
+                        {{data.weight}}kg<br/>
+                        体重↑
+                    </span>
+                </div>
             </div>
-            <div style="width:33%;text-align:center;float:left;color:#EDC855">
-                <strong>
-                    {{data.bmi}}<br/>
-                    BMI↓
-                </strong>
+
+            <div class="idx_wrapper">
+                <div class="idx_circle idx_bmi">
+                    <div class="idx_content">
+                        {{data.bmi}}<br/>
+                        BMI↓
+                    </div>
+                </div>
             </div>
-            <div style="width:33%;text-align:center;float:left;color:#D46795">
-                <strong>
-                    {{data.fatRatio * 100}}%<br/>
-                    脂肪↑
-                </strong>
+            <div class="idx_wrapper">
+                <div class="idx_circle idx_fat">
+                    <div class="idx_content">
+                        {{data.fatRatio * 100}}%<br/>
+                        脂肪↑
+                    </div>
+                </div>
             </div>
         </div>
-        <div style="float:left;width:100%;margin: 20px 0 10px;font-size:1.6em;text-align:center;color:#68C4F0; line-height: 1em;">
-            小宝恭喜您<br/>
-            您成功击败了<span style="color:#FF0404;font-size:1.2em">91.4%</span>的用户,太强悍了
+        <div class="msg_title">
+            诗琳美恭喜您！
+        </div>
+        <div class="msg_content">
+            您成功击败了<span class="msg_rate">91.4%</span>的用户，<br/>太强悍了！
         </div>
     </ion-content>
 </ion-view>
