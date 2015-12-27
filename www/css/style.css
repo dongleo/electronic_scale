@@ -1,3 +1,90 @@
+.bar-self {
+    color: #015dae;
+}
+
+.bar.bar-self {
+    border-color: #015dae;
+    background-color: #015dae;
+    background-image: linear-gradient(0deg, #015dae, #015dae 50%, transparent 50%);
+    color: #fff;
+}
+
+.bar.bar-self .title {
+    color: #fff;
+}
+
+.bar.bar-self.bar-footer {
+    background-image: linear-gradient(180deg, #015dae, #015dae 50%, transparent 50%);
+}
+
+.bar-self .button {
+    border-color: #015dae;
+    background-color: #015dae;
+    color: #fff;
+}
+
+.bar-self .button:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+.bar-self .button.active,
+.bar-self .button.activated {
+    border-color: #015dae;
+    background-color: #015dae;
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bar-self .button.button-clear {
+    border-color: transparent;
+    background: none;
+    box-shadow: none;
+    color: #fff;
+    font-size: 17px;
+}
+
+.bar-self .button.button-icon {
+    border-color: transparent;
+    background: none;
+}
+
+.tabs-self > .tabs,
+.tabs.tabs-self {
+    border-color: #015dae;
+    background-color: #015dae;
+    background-image: linear-gradient(0deg, #015dae, #015dae 50%, transparent 50%);
+    color: #fff;
+}
+
+.tabs-self > .tabs .tab-item .badge,
+.tabs.tabs-self .tab-item .badge {
+    background-color: #fff;
+    color: #015dae;
+}
+
+.tabs-striped.tabs-self .tabs {
+    background-color: #015dae;
+}
+
+.tabs-striped.tabs-self .tab-item {
+    color: rgba(255, 255, 255, 0.4);
+    opacity: 1;
+}
+
+.tabs-striped.tabs-self .tab-item .badge {
+    opacity: 0.4;
+}
+
+.tabs-striped.tabs-self .tab-item.tab-item-active,
+.tabs-striped.tabs-self .tab-item.active,
+.tabs-striped.tabs-self .tab-item.activated {
+    margin-top: -2px;
+    color: #fff;
+    border-style: solid;
+    border-width: 2px 0 0 0;
+    border-color: #fff;
+}
+
 .idx_container {
     margin: 0 15px 20px;
     font-size: 0;
