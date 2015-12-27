@@ -115,18 +115,18 @@
 }
 
 .idx_weight {
-    color: #EDC855;
-    border: 3px solid #EDC855;
+    color: #A60178;
+    border: 3px solid #A60178;
 }
 
 .idx_bmi {
-    color: #68C4F0;
-    border: 3px solid #68C4F0;
+    color: #46B1A2;
+    border: 3px solid #46B1A2;
 }
 
 .idx_fat {
-    color: #D46795;
-    border: 3px solid #D46795;
+    color: #EDC855;
+    border: 3px solid #EDC855;
 }
 
 .msg_title {
