@@ -5,8 +5,12 @@
         <ion-list>
             <ion-item class="item-avatar item-icon-right">
                 <img src="img/male.png"/>
+
                 <h2>Hello, World</h2>
                 <h4>我的个人描述</h4>
+                <ion-option-button class="button-positive" ng-click="share(item)">分享</ion-option-button>
+                <ion-option-button class="button-assertive" ng-click="edit(item)">编辑</ion-option-button>
+                <!--<ion-delete-button class="ion-minus-circled" ng-click="items.splice($index, 1)">删除</ion-delete-button>-->
             </ion-item>
         </ion-list>
     </ion-content>
