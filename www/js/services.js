@@ -149,13 +149,9 @@ services.service('StorageHelper', function ($window) {
                 });
                 return q.promise;
             },
-            connect: function (deviceID) {
+            connect: function (deviceID, success, failure) {
                 var q = $q.defer();
-                ble.connect(deviceID, function (result) {
-                    q.resolve(result);
-                }, function (error) {
-                    q.reject(error);
-                });
+                ble.connect(deviceID, success, failure);
                 return q.promise;
             },
             disconnect: function (deviceID) {
@@ -167,14 +163,10 @@ services.service('StorageHelper', function ($window) {
                 });
                 return q.promise;
             },
-            startNotification: function () {
-                var q = $q.defer();
-                ble.startNotification(function (result) {
-                    q.resolve(result);
-                }, function (error) {
-                    q.reject(error);
-                });
-                return q.promise;
+            startNotification: function (success, failure) {
+                //var q = $q.defer();
+                ble.startNotification(success, failure);
+                //return q.promise;
             },
             stopNotification: function () {
                 var q = $q.defer();
@@ -185,18 +177,18 @@ services.service('StorageHelper', function ($window) {
                 });
                 return q.promise;
             },
-            configWeighingMode: function () {
+            configWeighingMode: function (unit, mode) {
                 var q = $q.defer();
-                ble.startNotification(function (result) {
+                ble.configWeighingMode(unit, mode, function (result) {
                     q.resolve(result);
                 }, function (error) {
                     q.reject(error);
                 });
                 return q.promise;
             },
-            setupParameter: function () {
+            setupParameter: function (id, sex, age, height) {
                 var q = $q.defer();
-                ble.stopNotification(function (result) {
+                ble.setupParameter(id, sex, age, height, function (result) {
                     q.resolve(result);
                 }, function (error) {
                     q.reject(error);

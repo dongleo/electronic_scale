@@ -61,11 +61,7 @@ module.exports = {
     },
 
     connect: function (device_id, success, failure) {
-        var successWrapper = function(peripheral) {
-            convertToNativeJS(peripheral);
-            success(peripheral);
-        };
-        cordova.exec(successWrapper, failure, 'BLE', 'connect', [device_id]);
+        cordova.exec(success, failure, 'BLE', 'connect', [device_id]);
     },
 
     disconnect: function (device_id, success, failure) {
@@ -82,12 +78,12 @@ module.exports = {
         cordova.exec(success, failure, 'BLE', 'stopNotification', []);
     },
 
-    configWeighingMode: function (device_id, success, failure) {
-        cordova.exec(success, failure, 'BLE', 'isConnected', [device_id]);
+    configWeighingMode: function (unit, mode, success, failure) {
+        cordova.exec(success, failure, 'BLE', 'configWeighingMode', [unit, mode]);
     },
 
-    setupParameter: function (success, failure) {
-        cordova.exec(success, failure, 'BLE', 'isEnabled', []);
+    setupParameter: function (id, sex, age, height, success, failure) {
+        cordova.exec(success, failure, 'BLE', 'setupParameter', [id, sex, age, height]);
     }
 
 };

@@ -65,7 +65,7 @@
 // connect: function (device_id, success, failure) {
 - (void)connect:(CDVInvokedUrlCommand *)command {
     NSLog(@"connect");
-//    connectCallbackId = [command.callbackId copy];
+    connectCallbackId = [command.callbackId copy];
     NSString *uuid = [command.arguments objectAtIndex:0];
 
     CBPeripheral *peripheral = [self findPeripheralByUUID:uuid];
@@ -124,6 +124,7 @@
 // stopNotification: function (success, failure) {
 - (void)stopNotification:(CDVInvokedUrlCommand*)command {
     NSLog(@"stop notification");
+    notificationCallbackId = nil;
 }
 
 // hardwareVersion {
@@ -134,11 +135,26 @@
 // configWeighingMode: function (unit, mode, success, failure) {
 - (void)configWeighingMode:(CDVInvokedUrlCommand*)command {
     NSLog(@"configWeighingMode");
+    
+    NSString *unit = [command.arguments objectAtIndex:0];
+    NSString *mode = [command.arguments objectAtIndex:1];
+    
+    [bleHandler ElectronicScalesConfigWeighingMode:[unit intValue] :[mode intValue]];
 }
 
 // setupParameter: function (user_id, age, height, success, failure) {
 - (void)setupParameter:(CDVInvokedUrlCommand*)command {
     NSLog(@"setupParameter");
+    
+    NSString *accountId = [command.arguments objectAtIndex:0];
+    NSString *sex = [command.arguments objectAtIndex:1];
+    NSString *age = [command.arguments objectAtIndex:2];
+    NSString *height = [command.arguments objectAtIndex:3];
+    
+    [bleHandler ElectronicScalesSetupParameter:[accountId intValue]
+                                              :[sex intValue]
+                                              :[age intValue]
+                                              :[height intValue]];
 }
 
 #pragma mark - sendDelegate
@@ -149,7 +165,6 @@
     
     if (discoverPeripherialCallbackId) {
         CDVPluginResult *pluginResult = nil;
-        //TODO 扩展peripheral
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[peripheral asDictionary]];
         [pluginResult setKeepCallbackAsBool:YES];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:discoverPeripherialCallbackId];
@@ -171,6 +186,10 @@
 
 -(void)getBluetoothData:(NSString*)bluethoothData {
     NSLog(@"getBluetoothData: %@", bluethoothData);
+    if (connectCallbackId) {
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:connectCallbackId];
+    }
 }
 
 #pragma mark - internal implemetation

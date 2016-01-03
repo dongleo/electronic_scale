@@ -23,13 +23,11 @@
 #import <BTLinker_SingleConnection/SendDataToDevice.h>
 #import "CBPeripheral+Extensions.h"
 
-#define LOCKED_FLAG -47
-
 @interface EsBLEPlugin : CDVPlugin <sendDelegate> {
     SendDataToDevice *bleHandler;
     
     NSString *discoverPeripherialCallbackId;
-//    NSString *connectCallbackId;
+    NSString *connectCallbackId;
     NSString *notificationCallbackId;
 }
 

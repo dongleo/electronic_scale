@@ -49,13 +49,13 @@
     },
     "installed_plugins": {
         "cordova-plugin-device": {
-            "PACKAGE_NAME": "com.ionicframework.starter"
+            "PACKAGE_NAME": "com.xyscolor.electronicscale"
         },
         "cordova-plugin-splashscreen": {
-            "PACKAGE_NAME": "com.ionicframework.starter"
+            "PACKAGE_NAME": "com.xyscolor.electronicscale"
         },
         "ionic-plugin-keyboard": {
-            "PACKAGE_NAME": "com.ionicframework.starter"
+            "PACKAGE_NAME": "com.xyscolor.electronicscale"
         },
         "es-plugin-ble": {
             "PACKAGE_NAME": "com.xyscolor.electronicscale"
