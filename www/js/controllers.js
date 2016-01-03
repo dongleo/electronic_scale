@@ -107,7 +107,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
     })
 
-    .controller('checkCtrl', function ($scope, $ionicPlatform, $state, $ionicPopup, $cordovaBLE, PhyIndexService, StorageHelper, BleManager, Conf) {
+    .controller('checkCtrl', function ($scope, $ionicPlatform, $state, $ionicPopup, BleService, PhyIndexService, StorageHelper, BleManager, Conf) {
         $scope.data = StorageHelper.getObject('userData');
         $scope.labels = ["Download Sales", "In-Store Sales"];
         $scope.chartData = [900, 100];
@@ -137,11 +137,10 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             }
         };
         $scope.scan = function () {
-            //$cordovaBLE.scan([], 10).then(function (device) {
-            ble.scan([], Conf.SCAN_TIMEOUT, function (device) {
+            BleService.startScan(function (device) {
                 $ionicPopup.alert({
                     title: 'scan',
-                    template: 'scan'
+                    template: device
                 });
                 if (BleManager.exist(device)) {
                     $scope.connect(device, $scope.connectFail);
@@ -149,23 +148,27 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             }, function () {
             });
         };
-        $scope.connect = function (ble, failure) {
-            $cordovaBLE.connect(ble.id).then(function () {
-                $cordovaBLE.startNotification(ble.id, Conf.SERVICE_UUID, Conf.CHARACTERISTIC_UUID)
-                    .then($scope.receiveData);
-            }, failure);
+        $scope.connect = function (device, failure) {
+            BleService.connect(device.id);
+                /*.then(function () {
+                $ionicPopup.alert({
+                    title: 'connect success',
+                    template: 'connect success'
+                });
+            }, failure);*/
+            BleService.startNotification().then($scope.receiveData);
         };
         $scope.receiveData = function (data) {
+            $ionicPopup.alert({
+                title: '收到信息',
+                template: JSON.stringify(data)
+            });
+
             $scope.bleData = data;
             $scope.data.weight = (formatNumber(parseInt(data[3])) << 8) | formatNumber(parseInt(data[4]));
             $scope.data.weight /= 10;
             $scope.data.bmi = PhyIndexService.calcBMI($scope.data);
             $scope.data.fatRatio = PhyIndexService.calcFatRatio($scope.data);
-
-            $ionicPopup.alert({
-                title: '收到信息',
-                template: '体重：' + $scope.data.weight
-            });
 
             StorageHelper.setObject('userData', $scope.data);
 
@@ -186,7 +189,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         $ionicPlatform.ready($scope.init);
     })
 
-    .controller('bleListCtrl', function ($scope, $state, $ionicPlatform, $ionicLoading, $ionicPopup, $timeout, $cordovaBLE, BleManager, Conf) {
+    .controller('bleListCtrl', function ($scope, $state, $ionicPlatform, $ionicLoading, $ionicPopup, $timeout, BleService, BleManager, Conf) {
         $scope.bleList = [];
         $scope.isBleSelected = function () {
             return $scope.selectedBle == undefined || $scope.selectedBle == null;
@@ -203,13 +206,12 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 $scope.bleList.push(device);
             }
         };
-        $scope.selectedChange = function (ble) {
-            $scope.selectedBle = ble;
+        $scope.selectedChange = function (device) {
+            $scope.selectedBle = device;
         };
         $scope.scan = function () {
             //TODO $cordovaBLE收不到回调
-            //$cordovaBLE.scan([], 10).then(function (device) {
-            ble.scan([], Conf.SCAN_TIMEOUT, function (device) {
+            BleService.startScan(function (device) {
                 $ionicLoading.hide();
                 $scope.scanCallback(device);
             }, function () {
@@ -233,15 +235,15 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             $ionicLoading.show({
                 template: '扫描中...'
             });
-            $cordovaBLE.isEnabled().then(function () {
+            //$cordovaBLE.isEnabled().then(function () {
                 $scope.scan();
-            }, function () {
-                $ionicLoading.hide();
-                $ionicPopup.alert({
-                    title: '提示',
-                    template: '蓝牙不可用！'
-                });
-            });
+            //}, function () {
+            //    $ionicLoading.hide();
+            //    $ionicPopup.alert({
+            //        title: '提示',
+            //        template: '蓝牙不可用！'
+            //    });
+            //});
         });
     })
 

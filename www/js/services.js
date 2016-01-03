@@ -127,5 +127,82 @@ services.service('StorageHelper', function ($window) {
             return exist;
         };
         return manager;
+    })
+    .service('BleService', function($q) {
+        return {
+            _state: 'ready',
+            startScan: function (success, failure) {
+                if (this._state == 'scanning') {
+                    ble.stopScan();
+                }
+                var q = $q.defer();
+                this._state = 'scanning';
+                ble.startScan(success, failure);
+                //return q.promise;
+            },
+            stopScan: function () {
+                var q = $q.defer();
+                ble.stopScan(function () {
+                    q.resolve();
+                }, function (error) {
+                    q.reject(error);
+                });
+                return q.promise;
+            },
+            connect: function (deviceID) {
+                var q = $q.defer();
+                ble.connect(deviceID, function (result) {
+                    q.resolve(result);
+                }, function (error) {
+                    q.reject(error);
+                });
+                return q.promise;
+            },
+            disconnect: function (deviceID) {
+                var q = $q.defer();
+                ble.disconnect(deviceID, function (result) {
+                    q.resolve(result);
+                }, function (error) {
+                    q.reject(error);
+                });
+                return q.promise;
+            },
+            startNotification: function () {
+                var q = $q.defer();
+                ble.startNotification(function (result) {
+                    q.resolve(result);
+                }, function (error) {
+                    q.reject(error);
+                });
+                return q.promise;
+            },
+            stopNotification: function () {
+                var q = $q.defer();
+                ble.stopNotification(function (result) {
+                    q.resolve(result);
+                }, function (error) {
+                    q.reject(error);
+                });
+                return q.promise;
+            },
+            configWeighingMode: function () {
+                var q = $q.defer();
+                ble.startNotification(function (result) {
+                    q.resolve(result);
+                }, function (error) {
+                    q.reject(error);
+                });
+                return q.promise;
+            },
+            setupParameter: function () {
+                var q = $q.defer();
+                ble.stopNotification(function (result) {
+                    q.resolve(result);
+                }, function (error) {
+                    q.reject(error);
+                });
+                return q.promise;
+            }
+        };
     });
 

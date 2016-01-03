@@ -23,7 +23,7 @@
                     ],
                     "/widget": [
                         {
-                            "xml": "<feature name=\"BLE\"><param name=\"ios-package\" onload=\"true\" value=\"BLECentralPlugin\" /></feature>",
+                            "xml": "<feature name=\"BLE\"><param name=\"ios-package\" onload=\"true\" value=\"EsBLEPlugin\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -57,7 +57,7 @@
         "ionic-plugin-keyboard": {
             "PACKAGE_NAME": "com.ionicframework.starter"
         },
-        "cordova-plugin-ble-central": {
+        "es-plugin-ble": {
             "PACKAGE_NAME": "com.xyscolor.electronicscale"
         }
     },

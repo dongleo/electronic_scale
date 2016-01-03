@@ -1,0 +1,30 @@
+{
+  "name": "es-plugin-ble",
+  "version": "1.0.3",
+  "description": "Electronic Scale Bluetooth Low Energy (BLE) Central Plugin",
+  "cordova": {
+    "id": "es-plugin-ble",
+    "platforms": [
+      "ios",
+      "android"
+    ]
+  },
+  "keywords": [
+    "cordova",
+    "bluetooth",
+    "ble",
+    "bluetoothle",
+    "bluetooth le",
+    "low energy",
+    "smart",
+    "ecosystem:cordova",
+    "cordova-ios",
+    "cordova-android"
+  ],
+  "author": "Liu Dong <liudong0906@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/dongleo/es-plugin-ble/issues"
+  },
+  "homepage": "https://github.com/don/es-plugin-ble#readme"
+}

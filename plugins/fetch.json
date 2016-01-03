@@ -23,10 +23,10 @@
         "is_top_level": true,
         "variables": {}
     },
-    "cordova-plugin-ble-central": {
+    "es-plugin-ble": {
         "source": {
             "type": "local",
-            "path": "/Users/dongYer/Documents/WORK/github/cordova-plugin-ble-central"
+            "path": "/Users/dongYer/Documents/WORK/github/es-plugin-ble"
         },
         "is_top_level": true,
         "variables": {}
