@@ -1,16 +1,24 @@
 <ion-view title="账号信息">
     <ion-nav-bar class="bar-self">
+        <ion-nav-buttons side="left">
+            <button class="button button-icon icon ion-ios-minus-outline" ng-click="data.showDelete = !data.showDelete"></button>
+        </ion-nav-buttons>
+        <ion-nav-buttons side="right">
+            <button class="button button-icon icon ion-android-add" ng-click="addBle()"></button>
+        </ion-nav-buttons>
     </ion-nav-bar>
     <ion-content padding="false" class="has-header">
-        <ion-list>
-            <ion-item class="item-avatar item-icon-right">
+        <ion-list show-delete="data.showDelete">
+            <ion-item class="item-avatar item-icon-right item-remove-animate">
+                      <!--ng-repeat="account in accountList"-->
+                      <!--item="account">-->
                 <img src="img/male.png"/>
 
                 <h2>Hello, World</h2>
-                <h4>我的个人描述</h4>
-                <ion-option-button class="button-positive" ng-click="share(item)">分享</ion-option-button>
-                <ion-option-button class="button-assertive" ng-click="edit(item)">编辑</ion-option-button>
-                <!--<ion-delete-button class="ion-minus-circled" ng-click="items.splice($index, 1)">删除</ion-delete-button>-->
+                <!--<h4>我的个人描述</h4>-->
+                <ion-delete-button class="ion-minus-circled" ng-click="deleteAccount(account)"></ion-delete-button>
+                <ion-option-button class="button-positive" ng-click="setDefault(item)">设为默认</ion-option-button>
+                <ion-option-button class="button-assertive" ng-click="editAccount(item)">编辑</ion-option-button>
             </ion-item>
         </ion-list>
     </ion-content>

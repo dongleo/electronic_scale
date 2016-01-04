@@ -208,7 +208,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 $scope.scanEnd();
             }, Conf.SCAN_TIMEOUT * 1000);
         };
-        $scope.scanEnd = function() {
+        $scope.scanEnd = function () {
             $ionicLoading.hide();
             if ($scope.bleList.length == 0) {
                 $scope.show = true;
@@ -223,7 +223,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 template: '扫描中...'
             });
             //$cordovaBLE.isEnabled().then(function () {
-                $scope.scan();
+            $scope.scan();
             //}, function () {
             //    $ionicLoading.hide();
             //    $ionicPopup.alert({
@@ -322,6 +322,11 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         }
     })
 
-    .controller('accountCtrl', function ($scope) {
-
+    .controller('accountCtrl', function ($scope, $state) {
+        $scope.data = {
+            showDelete: false
+        };
+        $scope.go = function () {
+            $state.go('tab.check');
+        }
     });
