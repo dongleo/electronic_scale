@@ -23,7 +23,7 @@ services.service('StorageHelper', function ($window) {
         }
     }
 })
-    .service('AccountService', function ($q, $http, $ionicPopup, EsConfig) {
+    .service('AccountService', function ($q, $http, $ionicPopup, StorageHelper, EsConfig) {
         return {
             register: function (data) {
                 return $http({
@@ -45,17 +45,20 @@ services.service('StorageHelper', function ($window) {
                     data: angular.toJson(data)
                 });
             },
-            edit: function (data, token) {
+            edit: function (data) {
+                var parentAccountId = StorageHelper.get('parentAccountId');
+                var token = StorageHelper.get('token');
                 return $http({
                     method: 'POST',
-                    url: EsConfig.API_URL + "edit?accountId=" + data.accountId + "&token=" + token,
+                    url: EsConfig.API_URL + "edit?accountId=" + parentAccountId + "&token=" + token,
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     data: angular.toJson(data)
                 });
             },
-            modifyPasswd: function (data, token) {
+            modifyPasswd: function (data) {
+                var token = StorageHelper.get('token');
                 return $http({
                     method: 'POST',
                     url: EsConfig.API_URL + "passwd/modify?accountId=" + data.accountId + "&token=" + token,
@@ -65,41 +68,69 @@ services.service('StorageHelper', function ($window) {
                     data: angular.toJson(data)
                 });
             },
-            getAccountList: function(parentAccountId, token) {
+            addNewAccount: function (data) {
+                var parentAccountId = StorageHelper.get('parentAccountId');
+                var token = StorageHelper.get('token');
                 return $http({
                     method: 'POST',
-                    url: EsConfig.API_URL + "getAccountList?accountId=" + data.accountId + "&token=" + token,
+                    url: EsConfig.API_URL + "addNewAccount?accountId=" + parentAccountId + "&token=" + token,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: angular.toJson(data)
+                });
+            },
+            getAccountList: function () {
+                var parentAccountId = StorageHelper.get('parentAccountId');
+                var token = StorageHelper.get('token');
+                return $http({
+                    method: 'POST',
+                    url: EsConfig.API_URL + "getAccountList?accountId=" + parentAccountId + "&token=" + token,
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 });
+            },
+            getAccount: function (accountId) {
+                if (!accountId) {
+                    return null;
+                }
+                var accountList = StorageHelper.getObject('accountList');
+                for (var i = 0; i < accountList.length; i++) {
+                    if (accountId == accountList[i].accountId) {
+                        return accountList[i];
+                    }
+                }
+                return null;
             }
         };
     })
     .service('PhyIndexService', function ($q, $http, $ionicPopup, StorageHelper, EsConfig) {
         return {
-            calcBMI: function(userData) {
+            calcBMI: function (userData) {
                 return 21.3;
                 //return userData.weight / (userData.height * userData.height) * 10000;
             },
-            calcFatRatio: function(userData) {
+            calcFatRatio: function (userData) {
                 return 0.23;
                 /*var fat;
-                if (userData.gender) {  //男
-                    fat = userData.waistline * 0.74 - (userData.weight * 0.082 + 44.74)
-                } else {    //女
-                    fat = userData.waistline * 0.74 - (userData.weight * 0.082 + 34.89)
-                }
-                return fat / userData.weight;*/
+                 if (userData.gender) {  //男
+                 fat = userData.waistline * 0.74 - (userData.weight * 0.082 + 44.74)
+                 } else {    //女
+                 fat = userData.waistline * 0.74 - (userData.weight * 0.082 + 34.89)
+                 }
+                 return fat / userData.weight;*/
             },
-            submit: function (data, token) {
+            submit: function (data) {
+                var parentAccountId = StorageHelper.get('parentAccountId');
+                var token = StorageHelper.get('token');
                 $ionicPopup.alert({
                     title: 'submit',
                     template: 'submit data'
                 });
                 return $http({
                     method: 'POST',
-                    url: EsConfig.API_URL + "phy/submit?accountId=" + data.accountId + "&token=" + token,
+                    url: EsConfig.API_URL + "phy/submit?accountId=" + parentAccountId + "&token=" + token,
                     headers: {
                         'Content-Type': 'application/json'
                     },
@@ -137,7 +168,7 @@ services.service('StorageHelper', function ($window) {
         };
         return manager;
     })
-    .service('BleService', function($q) {
+    .service('BleService', function ($q) {
         return {
             _state: 'ready',
             startScan: function (success, failure) {

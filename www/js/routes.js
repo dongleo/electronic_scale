@@ -69,6 +69,11 @@ angular.module('app.routes', [])
                         controller: 'accountCtrl'
                     }
                 }
+            })
+            .state('accountEdit', {
+                url: '/account/edit/:accountId',
+                templateUrl: 'templates/account-edit.html',
+                controller: 'accountEditCtrl'
             });
 
         // if none of the above states are matched, use this as the fallback

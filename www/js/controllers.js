@@ -32,6 +32,9 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             AccountService.login($scope.data).success(function (response) {
                 if (response.success) {
                     StorageHelper.set('hasLogin', true);
+                    StorageHelper.set('token', response.data.token);
+                    StorageHelper.set('parentAccountId', response.data.accountId);
+                    StorageHelper.set('defaultAccountId', response.data.accountId);
                     StorageHelper.setObject('userData', response.data);
                     $ionicLoading.hide();
                     $state.go("tab.check");
@@ -108,6 +111,9 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
     .controller('checkCtrl', function ($scope, $ionicPlatform, $state, $ionicPopup, BleService, PhyIndexService, StorageHelper, BleManager, Conf) {
         $scope.data = StorageHelper.getObject('userData');
+        //if (!$scope.data.accountName) {
+        //    $state.go('edit');
+        //}
         $scope.labels = ["Download Sales", "In-Store Sales"];
         $scope.chartData = [900, 100];
         $scope.chartOptions = {
@@ -163,7 +169,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
             StorageHelper.setObject('userData', $scope.data);
 
-            PhyIndexService.submit($scope.data)
+            PhyIndexService.submit($scope.data);
         };
 
         $scope.connectFail = function () {
@@ -172,8 +178,8 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             //TODO 动画效果
         };
         $scope.$on('$ionicView.beforeEnter', function () {
-            $scope.selectedBle = BleManager.selectedBle;
-            if ($scope.selectedBle) {
+            if (BleManager.selectedBle) {
+                $scope.selectedBle = BleManager.selectedBle;
                 $scope.connect($scope.selectedBle, $scope.connectFail);
             }
         });
@@ -226,15 +232,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             $ionicLoading.show({
                 template: '扫描中...'
             });
-            //$cordovaBLE.isEnabled().then(function () {
             $scope.scan();
-            //}, function () {
-            //    $ionicLoading.hide();
-            //    $ionicPopup.alert({
-            //        title: '提示',
-            //        template: '蓝牙不可用！'
-            //    });
-            //});
         });
     })
 
@@ -243,7 +241,6 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         $scope.waistlineDic = Conf.waistlineDic;
         $scope.data = StorageHelper.getObject('userData');
         $scope.tel = parseInt($scope.data.tel);
-
         $scope.cancel = function () {
             $ionicHistory.goBack();
         };
@@ -277,7 +274,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                     title: '提示',
                     template: '身高不能为空！'
                 });
-            } else if ($scope.data.gender == undefined || $scope.data.gender == '') {
+            } else if ($scope.data.waistline == undefined || $scope.data.waistline == '') {
                 $ionicPopup.alert({
                     title: '提示',
                     template: '腰围不能为空！'
@@ -326,14 +323,153 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         }
     })
 
-    .controller('accountCtrl', function ($scope, $state, $ionicLoading, AccountService) {
+    .controller('accountCtrl', function ($scope, $state, $ionicLoading, $ionicPopup, StorageHelper, AccountService) {
+        $scope.defaultAccountId = StorageHelper.get('defaultAccountId');
         $scope.data = {
             showDelete: false
         };
-        $scope.go = function () {
-            $state.go('tab.check');
+        $scope.addNewAccount = function () {
+            $state.go('accountEdit');
         };
-        $scope.getAccountList = function() {
+        $scope.refresh = function () {
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            AccountService.getAccountList().success(function (response) {
+                $ionicLoading.hide();
+                if (response.success) {
+                    StorageHelper.setObject('accountList', response.data);
+                    $scope.data.accountList = response.data
+                }
+                $scope.initAccount();
+            }).error(function () {
+                $ionicLoading.hide();
+                $scope.initAccount();
+            });
+        };
+        $scope.initAccount = function () {
+            $scope.data.accountList = StorageHelper.getObject('accountList');
+            for (var i = 0; i < $scope.data.accountList.length; i++) {
+                if ($scope.data.accountList[i].accountId == $scope.defaultAccountId) {
+                    $scope.data.accountList[i].isDefault = true;
+                }
+            }
+        };
+        $scope.editAccount = function (account) {
+            $state.go('accountEdit', {accountId: account.accountId});
+        };
+        $scope.setDefault = function (account) {
+            StorageHelper.set('defaultAccountId', account.accountId);
+            $scope.defaultAccountId = StorageHelper.get('defaultAccountId');
+            for (var i = 0; i < $scope.data.accountList.length; i++) {
+                if ($scope.data.accountList[i].accountId == $scope.defaultAccountId) {
+                    $scope.data.accountList[i].isDefault = true;
+                } else {
+                    $scope.data.accountList[i].isDefault = false;
+                }
+            }
+        };
+        $scope.$on('$ionicView.beforeEnter', function () {
+            $scope.refresh();
+        });
+    })
 
+    .controller('accountEditCtrl', function ($scope, $state, $stateParams, $ionicHistory, $ionicLoading, $ionicPopup, Conf, StorageHelper, AccountService) {
+        $scope.heightDic = Conf.heightDic;
+        $scope.waistlineDic = Conf.waistlineDic;
+        $scope.data = {};
+        if ($stateParams.accountId) {
+            $scope.data = AccountService.getAccount($stateParams.accountId);
+        }
+        $scope.cancel = function () {
+            $ionicHistory.goBack();
         };
+        $scope.submit = function () {
+            $ionicPopup.alert({
+                title: 'alert',
+                template: 'edit'
+            });
+            if ($scope.data.accountName == undefined || $scope.data.accountName == '') {
+                $ionicPopup.alert({
+                    title: '提示',
+                    template: '昵称不能为空！'
+                });
+                return;
+            }
+            if ($scope.data.gender == undefined || $scope.data.gender == '') {
+                $ionicPopup.alert({
+                    title: '提示',
+                    template: '性别不能为空！'
+                });
+                return;
+            }
+            if ($scope.data.height == undefined || $scope.data.height == '') {
+                $ionicPopup.alert({
+                    title: '提示',
+                    template: '身高不能为空！'
+                });
+                return;
+            }
+            if ($scope.data.waistline == undefined || $scope.data.waistline == '') {
+                $ionicPopup.alert({
+                    title: '提示',
+                    template: '腰围不能为空！'
+                });
+                return;
+            }
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            if ($stateParams.accountId) {
+                AccountService.edit($scope.data).success(function (data) {
+                    if (data.success) {
+                        if (data.accountId == StorageHelper.get('defaultAccountId')) {
+                            StorageHelper.setObject('userData', $scope.data);
+                        }
+                        $ionicPopup.alert({
+                            title: '提示',
+                            template: '修改用户信息成功！'
+                        }).then(function () {
+                            $ionicHistory.goBack();
+                        });
+                    } else {
+                        $ionicPopup.alert({
+                            title: '提示',
+                            template: '修改用户信息失败！'
+                        });
+                    }
+                    $ionicLoading.hide();
+                }).error(function () {
+                    $ionicPopup.alert({
+                        title: '提示',
+                        template: '修改用户信息失败！'
+                    });
+                    $ionicLoading.hide();
+                });
+            } else {
+                $scope.data.parentAccountId = StorageHelper.get('parentAccountId');
+                AccountService.addNewAccount($scope.data).success(function (data) {
+                    if (data.success) {
+                        $ionicPopup.alert({
+                            title: '提示',
+                            template: '添加用户信息成功！'
+                        }).then(function () {
+                            $ionicHistory.goBack();
+                        });
+                    } else {
+                        $ionicPopup.alert({
+                            title: '提示',
+                            template: '添加用户信息失败！'
+                        });
+                    }
+                    $ionicLoading.hide();
+                }).error(function (data) {
+                    $ionicPopup.alert({
+                        title: '提示',
+                        template: JSON.stringify(data)
+                    });
+                    $ionicLoading.hide();
+                });
+            }
+        }
     });
