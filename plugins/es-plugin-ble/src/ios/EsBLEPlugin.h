@@ -44,6 +44,8 @@
 - (void)startNotification:(CDVInvokedUrlCommand *)command;
 - (void)stopNotification:(CDVInvokedUrlCommand *)command;
 
+- (void)confirmTime:(CDVInvokedUrlCommand *)command;
+
 - (void)configWeighingMode:(CDVInvokedUrlCommand *)command;
 - (void)setupParameter:(CDVInvokedUrlCommand *)command;
 

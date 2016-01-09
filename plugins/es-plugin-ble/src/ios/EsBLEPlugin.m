@@ -83,15 +83,15 @@
         }
     }
     
-    CDVPluginResult *pluginResult = nil;
-    if (success) {
-        NSLog(@"connect success.");
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    } else {
-        NSString *error = [NSString stringWithFormat:@"Could not find peripheral %@.", uuid];
-        NSLog(@"%@", error);
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error];
-    }
+//    CDVPluginResult *pluginResult = nil;
+//    if (success) {
+//        NSLog(@"connect success.");
+//        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+//    } else {
+//        NSString *error = [NSString stringWithFormat:@"Could not find peripheral %@.", uuid];
+//        NSLog(@"%@", error);
+//        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error];
+//    }
 //    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
@@ -130,6 +130,13 @@
 // hardwareVersion {
 - (void)hardwareVersion:(CDVInvokedUrlCommand *)command {
     NSLog(@"hardwareVersion");
+}
+
+// confirmTime {
+- (void)confirmTime:(CDVInvokedUrlCommand *)command {
+    NSLog(@"confirmTime");
+    
+    [bleHandler ElectronicScalesConfirmTime];
 }
 
 // configWeighingMode: function (unit, mode, success, failure) {
@@ -173,6 +180,10 @@
 
 -(void)getBluetoothState:(BOOL)State{
     NSLog(@"getBluetoothState: %d", State);
+    if (connectCallbackId) {
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:connectCallbackId];
+    }
 }
 
 -(void)getBluetoothDataForScale:(NSDictionary*)dic {
@@ -186,10 +197,6 @@
 
 -(void)getBluetoothData:(NSString*)bluethoothData {
     NSLog(@"getBluetoothData: %@", bluethoothData);
-    if (connectCallbackId) {
-        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:connectCallbackId];
-    }
 }
 
 #pragma mark - internal implemetation

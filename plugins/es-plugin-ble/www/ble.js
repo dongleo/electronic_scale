@@ -78,6 +78,10 @@ module.exports = {
         cordova.exec(success, failure, 'BLE', 'stopNotification', []);
     },
 
+    confirmTime: function (success, failure) {
+        cordova.exec(success, failure, 'BLE', 'confirmTime', []);
+    },
+
     configWeighingMode: function (unit, mode, success, failure) {
         cordova.exec(success, failure, 'BLE', 'configWeighingMode', [unit, mode]);
     },

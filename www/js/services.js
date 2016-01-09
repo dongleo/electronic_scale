@@ -1,7 +1,7 @@
 var services = angular.module('app.services', []);
 
 services.value('EsConfig', {
-    'API_URL': 'http://localhost:8080/es_web/'
+    'API_URL': 'http://app.slmbio.com:8080/es_web/'
 });
 
 services.service('StorageHelper', function ($window) {
@@ -63,6 +63,15 @@ services.service('StorageHelper', function ($window) {
                         'Content-Type': 'application/json'
                     },
                     data: angular.toJson(data)
+                });
+            },
+            getAccountList: function(parentAccountId, token) {
+                return $http({
+                    method: 'POST',
+                    url: EsConfig.API_URL + "getAccountList?accountId=" + data.accountId + "&token=" + token,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 });
             }
         };
@@ -171,6 +180,15 @@ services.service('StorageHelper', function ($window) {
             stopNotification: function () {
                 var q = $q.defer();
                 ble.stopNotification(function (result) {
+                    q.resolve(result);
+                }, function (error) {
+                    q.reject(error);
+                });
+                return q.promise;
+            },
+            confirmTime: function () {
+                var q = $q.defer();
+                ble.confirmTime(function (result) {
                     q.resolve(result);
                 }, function (error) {
                     q.reject(error);

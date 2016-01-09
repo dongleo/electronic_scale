@@ -73,10 +73,10 @@ angular.module('app.routes', [])
 
         // if none of the above states are matched, use this as the fallback
         //TODO 无法注入StorageHelper
-        /*if (localStorage.hasLogin) {
-         $urlRouterProvider.otherwise('/check');
-         } else {
-         $urlRouterProvider.otherwise('/login');
-         }*/
-        $urlRouterProvider.otherwise('/tab/check');
+        if (localStorage.hasLogin) {
+            $urlRouterProvider.otherwise('/tab/check');
+        } else {
+            $urlRouterProvider.otherwise('/login');
+        }
+        //$urlRouterProvider.otherwise('/tab/check');
     });
