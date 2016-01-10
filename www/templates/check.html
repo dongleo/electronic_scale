@@ -25,7 +25,7 @@
             <div class="idx_wrapper">
                 <div class="idx_circle idx_weight">
                     <span class="idx_content">
-                        {{data.weight}}kg<br/>
+                        {{data.weight || '--'}}kg<br/>
                         体重↑
                     </span>
                 </div>
@@ -34,7 +34,7 @@
             <div class="idx_wrapper">
                 <div class="idx_circle idx_bmi">
                     <div class="idx_content">
-                        {{data.bmi}}<br/>
+                        {{data.bmi || '--'}}<br/>
                         BMI↓
                     </div>
                 </div>
@@ -42,7 +42,7 @@
             <div class="idx_wrapper">
                 <div class="idx_circle idx_fat">
                     <div class="idx_content">
-                        {{data.fatRatio * 100}}%<br/>
+                        {{data.fatRatio * 100 || '--'}}%<br/>
                         脂肪↑
                     </div>
                 </div>

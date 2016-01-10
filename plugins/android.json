@@ -19,6 +19,10 @@
                         {
                             "xml": "<feature name=\"Keyboard\"><param name=\"android-package\" value=\"io.ionic.keyboard.IonicKeyboard\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -36,6 +40,9 @@
             "PACKAGE_NAME": "com.xyscolor.electronicscale"
         },
         "ionic-plugin-keyboard": {
+            "PACKAGE_NAME": "com.xyscolor.electronicscale"
+        },
+        "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "com.xyscolor.electronicscale"
         }
     },

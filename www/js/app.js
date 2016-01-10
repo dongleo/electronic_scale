@@ -20,7 +20,10 @@ angular.module('app',
             }
         });
     })
-    .config(function (ChartJsProvider) {
+    .config(function ($ionicConfigProvider, ChartJsProvider) {
+        //set header and tabs
+        $ionicConfigProvider.tabs.position('bottom');
+        $ionicConfigProvider.navBar.alignTitle('center');
         // Configure all charts
         ChartJsProvider.setOptions({
             colours: ['#97BBCD', '#DCDCDC', '#F7464A', '#46BFBD', '#FDB45C', '#949FB1', '#4D5360'],

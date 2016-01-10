@@ -59,6 +59,9 @@
         },
         "es-plugin-ble": {
             "PACKAGE_NAME": "com.xyscolor.electronicscale"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.xyscolor.electronicscale"
         }
     },
     "dependent_plugins": {}

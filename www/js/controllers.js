@@ -34,7 +34,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                     StorageHelper.set('hasLogin', true);
                     StorageHelper.set('token', response.data.token);
                     StorageHelper.set('parentAccountId', response.data.accountId);
-                    StorageHelper.set('defaultAccountId', response.data.accountId);
+                    //StorageHelper.set('defaultAccountId', response.data.accountId);
                     StorageHelper.setObject('userData', response.data);
                     $ionicLoading.hide();
                     $state.go("tab.check");
@@ -45,10 +45,10 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                     });
                     $ionicLoading.hide();
                 }
-            }).error(function () {
+            }).error(function (data) {
                 $ionicPopup.alert({
-                    title: '提示',
-                    template: '登录失败！'
+                    title: '报错',
+                    template: data
                 });
                 $ionicLoading.hide();
             });
@@ -324,7 +324,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
     })
 
     .controller('accountCtrl', function ($scope, $state, $ionicLoading, $ionicPopup, StorageHelper, AccountService) {
-        $scope.defaultAccountId = StorageHelper.get('defaultAccountId');
+        $scope.defaultAccount = StorageHelper.getObject('userData');
         $scope.data = {
             showDelete: false
         };
@@ -350,7 +350,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         $scope.initAccount = function () {
             $scope.data.accountList = StorageHelper.getObject('accountList');
             for (var i = 0; i < $scope.data.accountList.length; i++) {
-                if ($scope.data.accountList[i].accountId == $scope.defaultAccountId) {
+                if ($scope.data.accountList[i].accountId == $scope.defaultAccount.accountId) {
                     $scope.data.accountList[i].isDefault = true;
                 }
             }
@@ -359,15 +359,36 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             $state.go('accountEdit', {accountId: account.accountId});
         };
         $scope.setDefault = function (account) {
-            StorageHelper.set('defaultAccountId', account.accountId);
-            $scope.defaultAccountId = StorageHelper.get('defaultAccountId');
+            StorageHelper.setObject('userData', account);
+            $scope.defaultAccount = StorageHelper.getObject('userData');
             for (var i = 0; i < $scope.data.accountList.length; i++) {
-                if ($scope.data.accountList[i].accountId == $scope.defaultAccountId) {
+                if ($scope.data.accountList[i].accountId == $scope.defaultAccount.accountId) {
                     $scope.data.accountList[i].isDefault = true;
                 } else {
                     $scope.data.accountList[i].isDefault = false;
                 }
             }
+        };
+        $scope.deleteAccount = function (account) {
+            AccountService.deleteAccount(account).success(function (response) {
+                if (response.success) {
+                    $ionicPopup.alert({
+                        title: '提示',
+                        template: '删除用户信息成功！'
+                    });
+
+                } else {
+                    $ionicPopup.alert({
+                        title: '提示',
+                        template: '删除用户信息失败！'
+                    });
+                }
+            }).error(function (data) {
+                $ionicPopup.alert({
+                    title: '提示',
+                    template: JSON.stringify(data)
+                });
+            });
         };
         $scope.$on('$ionicView.beforeEnter', function () {
             $scope.refresh();
@@ -423,7 +444,8 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             if ($stateParams.accountId) {
                 AccountService.edit($scope.data).success(function (data) {
                     if (data.success) {
-                        if (data.accountId == StorageHelper.get('defaultAccountId')) {
+                        var defaultAccount = StorageHelper.getObject('userData');
+                        if (data.accountId == defaultAccount.accountId) {
                             StorageHelper.setObject('userData', $scope.data);
                         }
                         $ionicPopup.alert({

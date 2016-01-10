@@ -40,7 +40,8 @@ services.service('StorageHelper', function ($window) {
                     method: 'POST',
                     url: EsConfig.API_URL + "login",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
                     },
                     data: angular.toJson(data)
                 });
@@ -86,6 +87,17 @@ services.service('StorageHelper', function ($window) {
                 return $http({
                     method: 'POST',
                     url: EsConfig.API_URL + "getAccountList?accountId=" + parentAccountId + "&token=" + token,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+            },
+            deleteAccount: function (account) {
+                var parentAccountId = StorageHelper.get('parentAccountId');
+                var token = StorageHelper.get('token');
+                return $http({
+                    method: 'POST',
+                    url: EsConfig.API_URL + "delete/" +  account.accountId + "?accountId=" + parentAccountId + "&token=" + token,
                     headers: {
                         'Content-Type': 'application/json'
                     }
