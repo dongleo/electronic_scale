@@ -23,6 +23,7 @@ angular.module('app',
     .config(function ($ionicConfigProvider, ChartJsProvider) {
         //set header and tabs
         $ionicConfigProvider.tabs.position('bottom');
+        $ionicConfigProvider.tabs.style('standard');
         $ionicConfigProvider.navBar.alignTitle('center');
         // Configure all charts
         ChartJsProvider.setOptions({

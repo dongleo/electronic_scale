@@ -45,10 +45,10 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                     });
                     $ionicLoading.hide();
                 }
-            }).error(function (data) {
+            }).error(function () {
                 $ionicPopup.alert({
-                    title: '报错',
-                    template: data
+                    title: '提示',
+                    template: '网络不可用!'
                 });
                 $ionicLoading.hide();
             });
@@ -101,7 +101,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 }).error(function () {
                     $ionicPopup.alert({
                         title: '提示',
-                        template: '注册失败！'
+                        template: '网络不可用！'
                     });
                     $ionicLoading.hide();
                 });
@@ -249,64 +249,72 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             $scope.data.tel = $scope.tel;
             //$scope.data.birth = $scope.birth;
 
-            if ($scope.data.tel == undefined || $scope.data.tel == '') {
-                $ionicPopup.alert({
-                    title: '提示',
-                    template: '手机号不能为空！'
-                });
-            } else if ($scope.data.accountName == undefined || $scope.data.accountName == '') {
+            /*if ($scope.data.tel == undefined || $scope.data.tel == '') {
+             $ionicPopup.alert({
+             title: '提示',
+             template: '手机号不能为空！'
+             });
+             return;
+             } */
+            if ($scope.data.accountName == undefined || $scope.data.accountName == '') {
                 $ionicPopup.alert({
                     title: '提示',
                     template: '昵称不能为空！'
                 });
+                return;
                 /*} else if ($scope.data.birth == undefined || $scope.data.birth == '') {
                  $ionicPopup.alert({
                  title: '提示',
                  template: '生日不能为空！'
                  });*/
-            } else if ($scope.data.gender == undefined || $scope.data.gender == '') {
+            }
+            if ($scope.data.gender == undefined || $scope.data.gender == '') {
                 $ionicPopup.alert({
                     title: '提示',
                     template: '性别不能为空！'
                 });
-            } else if ($scope.data.height == undefined || $scope.data.height == '') {
+                return;
+            }
+            if ($scope.data.height == undefined || $scope.data.height == '') {
                 $ionicPopup.alert({
                     title: '提示',
                     template: '身高不能为空！'
                 });
-            } else if ($scope.data.waistline == undefined || $scope.data.waistline == '') {
+                return;
+            }
+            if ($scope.data.waistline == undefined || $scope.data.waistline == '') {
                 $ionicPopup.alert({
                     title: '提示',
                     template: '腰围不能为空！'
                 });
-            } else {
-                $ionicLoading.show({
-                    template: 'Loading...'
-                });
-                AccountService.edit($scope.data).success(function (data) {
-                    if (data.success) {
-                        StorageHelper.setObject('userData', $scope.data);
-                        $ionicPopup.alert({
-                            title: '提示',
-                            template: '修改用户信息成功！'
-                        }).then(function () {
-                            $state.go("tab.check");
-                        });
-                    } else {
-                        $ionicPopup.alert({
-                            title: '提示',
-                            template: '修改用户信息失败！'
-                        });
-                    }
-                    $ionicLoading.hide();
-                }).error(function () {
+                return;
+            }
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            AccountService.edit($scope.data).success(function (data) {
+                if (data.success) {
+                    StorageHelper.setObject('userData', $scope.data);
+                    $ionicPopup.alert({
+                        title: '提示',
+                        template: '修改用户信息成功！'
+                    }).then(function () {
+                        $state.go("tab.check");
+                    });
+                } else {
                     $ionicPopup.alert({
                         title: '提示',
                         template: '修改用户信息失败！'
                     });
-                    $ionicLoading.hide();
+                }
+                $ionicLoading.hide();
+            }).error(function () {
+                $ionicPopup.alert({
+                    title: '提示',
+                    template: '网络不可用！'
                 });
-            }
+                $ionicLoading.hide();
+            });
         };
         $scope.logout = function () {
             $ionicPopup.confirm({
@@ -314,8 +322,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 template: '是否确定退出？'
             }).then(function (yes) {
                 if (yes) {
-                    StorageHelper.remove('userData');
-                    StorageHelper.remove('hasLogin');
+                    StorageHelper.clear();
 
                     $state.go("login");
                 }
@@ -370,6 +377,14 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             }
         };
         $scope.deleteAccount = function (account) {
+            var parentAccountId = StorageHelper.get('parentAccountId');
+            if (account.accountId == parentAccountId) {
+                $ionicPopup.alert({
+                    title: '提示',
+                    template: '不能删除主账号！'
+                });
+                return;
+            }
             AccountService.deleteAccount(account).success(function (response) {
                 if (response.success) {
                     $ionicPopup.alert({
@@ -377,16 +392,19 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                         template: '删除用户信息成功！'
                     });
 
+                    if (account.accountId == $scope.defaultAccount.accountId) {
+                        $scope.setDefault(AccountService.getAccount(parentAccountId));
+                    }
                 } else {
                     $ionicPopup.alert({
                         title: '提示',
                         template: '删除用户信息失败！'
                     });
                 }
-            }).error(function (data) {
+            }).error(function () {
                 $ionicPopup.alert({
                     title: '提示',
-                    template: JSON.stringify(data)
+                    template: '网络不可用！'
                 });
             });
         };
@@ -398,9 +416,11 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
     .controller('accountEditCtrl', function ($scope, $state, $stateParams, $ionicHistory, $ionicLoading, $ionicPopup, Conf, StorageHelper, AccountService) {
         $scope.heightDic = Conf.heightDic;
         $scope.waistlineDic = Conf.waistlineDic;
-        $scope.data = {};
         if ($stateParams.accountId) {
             $scope.data = AccountService.getAccount($stateParams.accountId);
+        } else {
+            $scope.data = {};
+            $scope.title = '添加账号信息';
         }
         $scope.cancel = function () {
             $ionicHistory.goBack();
@@ -464,7 +484,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 }).error(function () {
                     $ionicPopup.alert({
                         title: '提示',
-                        template: '修改用户信息失败！'
+                        template: '网络不可用！'
                     });
                     $ionicLoading.hide();
                 });
@@ -485,13 +505,17 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                         });
                     }
                     $ionicLoading.hide();
-                }).error(function (data) {
+                }).error(function () {
                     $ionicPopup.alert({
                         title: '提示',
-                        template: JSON.stringify(data)
+                        template: '网络不可用!'
                     });
                     $ionicLoading.hide();
                 });
             }
         }
+    })
+
+    .controller('chartsCtrl', function ($scope, $state) {
+
     });
