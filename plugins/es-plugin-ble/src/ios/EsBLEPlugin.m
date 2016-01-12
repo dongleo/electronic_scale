@@ -38,6 +38,7 @@
     
     bleHandler = [SendDataToDevice getSendDataToDeviceInstance];
     bleHandler.delegate = self;
+    //[bleHandler myInit];
 }
 
 #pragma mark - Electronic Scale BLE Plugin Methods
@@ -180,7 +181,7 @@
 
 -(void)getBluetoothState:(BOOL)State{
     NSLog(@"getBluetoothState: %d", State);
-    if (connectCallbackId) {
+    if (State == 1 && connectCallbackId) {
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:connectCallbackId];
     }
@@ -195,8 +196,8 @@
     }
 }
 
--(void)getBluetoothData:(NSString*)bluethoothData {
-    NSLog(@"getBluetoothData: %@", bluethoothData);
+-(void)getBluetoothData:(NSDictionary*)bluethoothDataDic {
+    NSLog(@"getBluetoothData: %@", bluethoothDataDic);
 }
 
 #pragma mark - internal implemetation

@@ -57,10 +57,10 @@
         "ionic-plugin-keyboard": {
             "PACKAGE_NAME": "com.xyscolor.electronicscale"
         },
-        "es-plugin-ble": {
+        "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "com.xyscolor.electronicscale"
         },
-        "cordova-plugin-whitelist": {
+        "es-plugin-ble": {
             "PACKAGE_NAME": "com.xyscolor.electronicscale"
         }
     },

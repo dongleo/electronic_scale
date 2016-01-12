@@ -34,36 +34,30 @@ import org.json.JSONException;
 
 import java.util.*;
 
+import com.xrz.lib.bluetooth.BTLinkerUtils;
+
 public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.LeScanCallback {
 
     // actions
-    private static final String SCAN = "scan";
     private static final String START_SCAN = "startScan";
     private static final String STOP_SCAN = "stopScan";
-
-    private static final String LIST = "list";
 
     private static final String CONNECT = "connect";
     private static final String DISCONNECT = "disconnect";
 
-    private static final String READ = "read";
-    private static final String WRITE = "write";
-    private static final String WRITE_WITHOUT_RESPONSE = "writeWithoutResponse";
-
     private static final String START_NOTIFICATION = "startNotification"; // register for characteristic notification
     private static final String STOP_NOTIFICATION = "stopNotification"; // remove characteristic notification
 
-    private static final String IS_ENABLED = "isEnabled";
-    private static final String IS_CONNECTED  = "isConnected";
-
-    private static final String SETTINGS = "showBluetoothSettings";
-    private static final String ENABLE = "enable";
+    private static final String CONFIRM_TIME = "confirmTime";
+    private static final String CONFIG_WEIGHING_MODE  = "configWeighingMode";
+    private static final String SETUP_PARAMETER  = "setupParameter";
     // callbacks
-    CallbackContext discoverCallback;
-    private CallbackContext enableBluetoothCallback;
+    private CallbackContext discoverCallback;
+    private CallbackContext connectCallback;
+    private CallbackContext notificationCallback;
 
     private static final String TAG = "BLEPlugin";
-    private static final int REQUEST_ENABLE_BLUETOOTH = 1;
+//    private static final int REQUEST_ENABLE_BLUETOOTH = 1;
 
     BluetoothAdapter bluetoothAdapter;
 
@@ -72,7 +66,6 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
 
     @Override
     public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
-
         LOG.d(TAG, "action = " + action);
 
         if (bluetoothAdapter == null) {
@@ -83,221 +76,41 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
 
         boolean validAction = true;
 
-        if (action.equals(SCAN)) {
-
-            UUID[] serviceUUIDs = parseServiceUUIDList(args.getJSONArray(0));
-            int scanSeconds = args.getInt(1);
-            findLowEnergyDevices(callbackContext, serviceUUIDs, scanSeconds);
-
-        } else if (action.equals(START_SCAN)) {
-
-            UUID[] serviceUUIDs = parseServiceUUIDList(args.getJSONArray(0));
-            findLowEnergyDevices(callbackContext, serviceUUIDs, -1);
-
+        if (action.equals(START_SCAN)) {
+            startScan(callbackContext);
         } else if (action.equals(STOP_SCAN)) {
-
             bluetoothAdapter.stopLeScan(this);
             callbackContext.success();
-
-        } else if (action.equals(LIST)) {
-
-            listKnownDevices(callbackContext);
-
         } else if (action.equals(CONNECT)) {
-
             String macAddress = args.getString(0);
             connect(callbackContext, macAddress);
-
         } else if (action.equals(DISCONNECT)) {
-
             String macAddress = args.getString(0);
             disconnect(callbackContext, macAddress);
-
-        } else if (action.equals(READ)) {
-
-            String macAddress = args.getString(0);
-            UUID serviceUUID = uuidFromString(args.getString(1));
-            UUID characteristicUUID = uuidFromString(args.getString(2));
-            read(callbackContext, macAddress, serviceUUID, characteristicUUID);
-
-        } else if (action.equals(WRITE)) {
-
-            String macAddress = args.getString(0);
-            UUID serviceUUID = uuidFromString(args.getString(1));
-            UUID characteristicUUID = uuidFromString(args.getString(2));
-            byte[] data = args.getArrayBuffer(3);
-            int type = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT;
-            write(callbackContext, macAddress, serviceUUID, characteristicUUID, data, type);
-
-        } else if (action.equals(WRITE_WITHOUT_RESPONSE)) {
-
-            String macAddress = args.getString(0);
-            UUID serviceUUID = uuidFromString(args.getString(1));
-            UUID characteristicUUID = uuidFromString(args.getString(2));
-            byte[] data = args.getArrayBuffer(3);
-            int type = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE;
-            write(callbackContext, macAddress, serviceUUID, characteristicUUID, data, type);
-
         } else if (action.equals(START_NOTIFICATION)) {
-
-            String macAddress = args.getString(0);
-            UUID serviceUUID = uuidFromString(args.getString(1));
-            UUID characteristicUUID = uuidFromString(args.getString(2));
-            registerNotifyCallback(callbackContext, macAddress, serviceUUID, characteristicUUID);
-
+            startNotification(callbackContext);
         } else if (action.equals(STOP_NOTIFICATION)) {
-
-            String macAddress = args.getString(0);
-            UUID serviceUUID = uuidFromString(args.getString(1));
-            UUID characteristicUUID = uuidFromString(args.getString(2));
-            removeNotifyCallback(callbackContext, macAddress, serviceUUID, characteristicUUID);
-
-        } else if (action.equals(IS_ENABLED)) {
-
-            if (bluetoothAdapter.isEnabled()) {
-                callbackContext.success();
-            } else {
-                callbackContext.error("Bluetooth is disabled.");
-            }
-
-        } else if (action.equals(IS_CONNECTED)) {
-
-            String macAddress = args.getString(0);
-
-            if (peripherals.containsKey(macAddress) && peripherals.get(macAddress).isConnected()) {
-                callbackContext.success();
-            } else {
-                callbackContext.error("Not connected.");
-            }
-
-        } else if (action.equals(SETTINGS)) {
-
-            Intent intent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
-            cordova.getActivity().startActivity(intent);
-            callbackContext.success();
-
-        } else if (action.equals(ENABLE)) {
-
-            enableBluetoothCallback = callbackContext;
-            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            cordova.startActivityForResult(this, intent, REQUEST_ENABLE_BLUETOOTH);
-
+            stopNotification(callbackContext);
+        } else if (action.equals(CONFIRM_TIME)) {
+            confirmTime();
+        } else if (action.equals(CONFIG_WEIGHING_MODE)) {
+            int unit = args.getInt(0);
+            int mode = args.getInt(1);
+            configWeighingMode(callbackContext, unit, mode);
+        } else if (action.equals(SETUP_PARAMETER)) {
+            int accountId = args.getInt(0);
+            int sex = args.getInt(1);
+            int age = args.getInt(2);
+            int height = args.getInt(3);
+            setParameter(callbackContext, accountId, sex, age, height);
         } else {
-
             validAction = false;
-
         }
 
         return validAction;
     }
 
-    private UUID[] parseServiceUUIDList(JSONArray jsonArray) throws JSONException {
-        List<UUID> serviceUUIDs = new ArrayList<UUID>();
-
-        for(int i = 0; i < jsonArray.length(); i++){
-            String uuidString = jsonArray.getString(i);
-            serviceUUIDs.add(uuidFromString(uuidString));
-        }
-
-        return serviceUUIDs.toArray(new UUID[jsonArray.length()]);
-    }
-
-    private void connect(CallbackContext callbackContext, String macAddress) {
-
-        Peripheral peripheral = peripherals.get(macAddress);
-        if (peripheral != null) {
-            peripheral.connect(callbackContext, cordova.getActivity());
-        } else {
-            callbackContext.error("Peripheral " + macAddress + " not found.");
-        }
-
-    }
-
-    private void disconnect(CallbackContext callbackContext, String macAddress) {
-
-        Peripheral peripheral = peripherals.get(macAddress);
-        if (peripheral != null) {
-            peripheral.disconnect();
-        }
-        callbackContext.success();
-
-    }
-
-    private void read(CallbackContext callbackContext, String macAddress, UUID serviceUUID, UUID characteristicUUID) {
-
-        Peripheral peripheral = peripherals.get(macAddress);
-
-        if (peripheral == null) {
-            callbackContext.error("Peripheral " + macAddress + " not found.");
-            return;
-        }
-
-        if (!peripheral.isConnected()) {
-            callbackContext.error("Peripheral " + macAddress + " is not connected.");
-            return;
-        }
-
-        //peripheral.readCharacteristic(callbackContext, serviceUUID, characteristicUUID);
-        peripheral.queueRead(callbackContext, serviceUUID, characteristicUUID);
-
-    }
-
-    private void write(CallbackContext callbackContext, String macAddress, UUID serviceUUID, UUID characteristicUUID,
-                       byte[] data, int writeType) {
-
-        Peripheral peripheral = peripherals.get(macAddress);
-
-        if (peripheral == null) {
-            callbackContext.error("Peripheral " + macAddress + " not found.");
-            return;
-        }
-
-        if (!peripheral.isConnected()) {
-            callbackContext.error("Peripheral " + macAddress + " is not connected.");
-            return;
-        }
-
-        //peripheral.writeCharacteristic(callbackContext, serviceUUID, characteristicUUID, data, writeType);
-        peripheral.queueWrite(callbackContext, serviceUUID, characteristicUUID, data, writeType);
-
-    }
-
-    private void registerNotifyCallback(CallbackContext callbackContext, String macAddress, UUID serviceUUID, UUID characteristicUUID) {
-
-        Peripheral peripheral = peripherals.get(macAddress);
-        if (peripheral != null) {
-
-            //peripheral.setOnDataCallback(serviceUUID, characteristicUUID, callbackContext);
-            peripheral.queueRegisterNotifyCallback(callbackContext, serviceUUID, characteristicUUID);
-
-        } else {
-
-            callbackContext.error("Peripheral " + macAddress + " not found");
-
-        }
-
-    }
-
-    private void removeNotifyCallback(CallbackContext callbackContext, String macAddress, UUID serviceUUID, UUID characteristicUUID) {
-
-        Peripheral peripheral = peripherals.get(macAddress);
-        if (peripheral != null) {
-
-            peripheral.queueRemoveNotifyCallback(callbackContext, serviceUUID, characteristicUUID);
-
-        } else {
-
-            callbackContext.error("Peripheral " + macAddress + " not found");
-
-        }
-
-    }
-
-
-    private void findLowEnergyDevices(CallbackContext callbackContext, UUID[] serviceUUIDs, int scanSeconds) {
-
-        // TODO skip if currently scanning
-
+    private void startScan(CallbackContext callbackContext) {
         // clear non-connected cached peripherals
         for(Iterator<Map.Entry<String, Peripheral>> iterator = peripherals.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry<String, Peripheral> entry = iterator.next();
@@ -308,40 +121,47 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
 
         discoverCallback = callbackContext;
 
-        if (serviceUUIDs.length > 0) {
-            bluetoothAdapter.startLeScan(serviceUUIDs, this);
-        } else {
-            bluetoothAdapter.startLeScan(this);
-        }
+        bluetoothAdapter.startLeScan(this);
 
-        if (scanSeconds > 0) {
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    LOG.d(TAG, "Stopping Scan");
-                    BLECentralPlugin.this.bluetoothAdapter.stopLeScan(BLECentralPlugin.this);
-                }
-            }, scanSeconds * 1000);
-        }
-
-        PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+        /*PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
         result.setKeepCallback(true);
-        callbackContext.sendPluginResult(result);
+        callbackContext.sendPluginResult(result);*/
     }
 
-    private void listKnownDevices(CallbackContext callbackContext) {
-
-        JSONArray json = new JSONArray();
-
-        // do we care about consistent order? will peripherals.values() be in order?
-        for (Map.Entry<String, Peripheral> entry : peripherals.entrySet()) {
-            Peripheral peripheral = entry.getValue();
-            json.put(peripheral.asJSONObject());
+    private void connect(CallbackContext callbackContext, String macAddress) {
+        //todo
+        Peripheral peripheral = peripherals.get(macAddress);
+        if (peripheral != null) {
+            BTLinkerUtils.connect(macAddress);
+        } else {
+            callbackContext.error("Peripheral " + macAddress + " not found.");
         }
+    }
 
-        PluginResult result = new PluginResult(PluginResult.Status.OK, json);
-        callbackContext.sendPluginResult(result);
+    private void disconnect(CallbackContext callbackContext) {
+        BTLinkerUtils.disconnect();
+        callbackContext.success();
+    }
+
+    private void startNotification(CallbackContext callbackContext) {
+        notificationCallback = callbackContext;
+    }
+
+    private void stopNotification(CallbackContext callbackContext) {
+        notificationCallback = null;
+        callbackContext.success();
+    }
+
+    private void confirmTime() {
+
+    }
+
+    private void configWeighingMode(CallbackContext callbackContext, int unit, int mode) {
+
+    }
+
+    private void setupParameter(CallbackContext callbackContext, int accountId, int sex, int age, int height) {
+
     }
 
     @Override
@@ -389,10 +209,6 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
 
             enableBluetoothCallback = null;
         }
-    }
-
-    private UUID uuidFromString(String uuid) {
-        return UUIDHelper.uuidFromString(uuid);
     }
 
 }

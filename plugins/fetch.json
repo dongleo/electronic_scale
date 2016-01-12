@@ -23,18 +23,18 @@
         "is_top_level": true,
         "variables": {}
     },
-    "es-plugin-ble": {
-        "source": {
-            "type": "local",
-            "path": "/Users/dongYer/Documents/WORK/github/es-plugin-ble"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "cordova-plugin-whitelist": {
         "source": {
             "type": "registry",
             "id": "cordova-plugin-whitelist"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "es-plugin-ble": {
+        "source": {
+            "type": "local",
+            "path": "/Users/dongYer/Documents/WORK/github/es-plugin-ble"
         },
         "is_top_level": true,
         "variables": {}
