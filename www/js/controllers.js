@@ -157,8 +157,8 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 BleService.setParameter(1, 1, 25, 173);
                 // 3、设置单位
                 BleService.configWeighingMode(Conf.DEFAULT_UNIT, Conf.DEFAULT_MODE);
-                BleService.startNotification($scope.receiveData);
             }, failure);
+            BleService.startNotification($scope.receiveData);
         };
         $scope.receiveData = function (data) {
             $scope.bleData = data;

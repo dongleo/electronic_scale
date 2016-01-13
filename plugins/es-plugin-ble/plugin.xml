@@ -40,7 +40,7 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/widget">
             <feature name="BLE">
-                <param name="android-package" value="com.megster.cordova.ble.central.BLECentralPlugin"/>
+                <param name="android-package" value="com.megster.cordova.ble.central.BLECentralPlugin" onload="true"/>
             </feature>
         </config-file>
 
@@ -51,5 +51,8 @@
 
         <source-file src="src/android/BLECentralPlugin.java" target-dir="src/com/megster/cordova/ble/central"/>
         <source-file src="src/android/Peripheral.java" target-dir="src/com/megster/cordova/ble/central"/>
+        <source-file src="src/android/libs/android-support-v4.jar" target-dir="libs" custom="true"/>
+        <source-file src="src/android/libs/sun.misc.BASE64Decoder.jar" target-dir="libs" custom="true"/>
+        <source-file src="src/android/libs/xinruizhi_20150925_xju.jar" target-dir="libs" custom="true"/>
     </platform>
 </plugin>

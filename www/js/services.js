@@ -202,6 +202,7 @@ services.service('StorageHelper', function ($window) {
                 }, function (error) {
                     q.reject(error);
                 });
+                this._state = 'ready';
                 return q.promise;
             },
             connect: function (deviceID, success, failure) {

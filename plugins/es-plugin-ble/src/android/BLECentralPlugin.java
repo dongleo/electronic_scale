@@ -17,26 +17,21 @@ package com.megster.cordova.ble.central;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-
-import android.provider.Settings;
-import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaArgs;
-import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.LOG;
-import org.apache.cordova.PluginResult;
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.util.*;
-
 import com.xrz.lib.bluetooth.BTLinkerUtils;
+import com.xrz.lib.bluetooth.BtlinkerDataListener;
+import com.xrz.lib.bluetooth.ReceiveDeviceDataService;
+import org.apache.cordova.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.LeScanCallback {
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.LeScanCallback, BtlinkerDataListener {
 
     // actions
     private static final String START_SCAN = "startScan";
@@ -49,8 +44,8 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
     private static final String STOP_NOTIFICATION = "stopNotification"; // remove characteristic notification
 
     private static final String CONFIRM_TIME = "confirmTime";
-    private static final String CONFIG_WEIGHING_MODE  = "configWeighingMode";
-    private static final String SETUP_PARAMETER  = "setupParameter";
+    private static final String CONFIG_WEIGHING_MODE = "configWeighingMode";
+    private static final String SETUP_PARAMETER = "setupParameter";
     // callbacks
     private CallbackContext discoverCallback;
     private CallbackContext connectCallback;
@@ -65,58 +60,59 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
     Map<String, Peripheral> peripherals = new LinkedHashMap<String, Peripheral>();
 
     @Override
-    public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
-        LOG.d(TAG, "action = " + action);
+    public boolean execute(final String action, final CordovaArgs args, final CallbackContext callbackContext) {
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LOG.i(TAG, "action = " + action);
 
-        if (bluetoothAdapter == null) {
-            Activity activity = cordova.getActivity();
-            BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
-            bluetoothAdapter = bluetoothManager.getAdapter();
-        }
+                if (bluetoothAdapter == null) {
+                    Activity activity = cordova.getActivity();
+                    BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+                    bluetoothAdapter = bluetoothManager.getAdapter();
+                }
 
-        boolean validAction = true;
+                try {
+                    if (action.equals(START_SCAN)) {
+                        startScan(callbackContext);
+                    } else if (action.equals(STOP_SCAN)) {
+                        stopScan(callbackContext);
+                    } else if (action.equals(CONNECT)) {
+                        String macAddress = args.getString(0);
+                        connect(callbackContext, macAddress);
+                    } else if (action.equals(DISCONNECT)) {
+                        disconnect(callbackContext);
+                    } else if (action.equals(START_NOTIFICATION)) {
+                        startNotification(callbackContext);
+                    } else if (action.equals(STOP_NOTIFICATION)) {
+                        stopNotification(callbackContext);
+                    } else if (action.equals(CONFIRM_TIME)) {
+                        confirmTime(callbackContext);
+                    } else if (action.equals(CONFIG_WEIGHING_MODE)) {
+                        int unit = args.getInt(0);
+                        int mode = args.getInt(1);
+                        configWeighingMode(callbackContext, unit, mode);
+                    } else if (action.equals(SETUP_PARAMETER)) {
+                        int accountId = args.getInt(0);
+                        int sex = args.getInt(1);
+                        int age = args.getInt(2);
+                        int height = args.getInt(3);
+                        setupParameter(callbackContext, accountId, sex, age, height);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
-        if (action.equals(START_SCAN)) {
-            startScan(callbackContext);
-        } else if (action.equals(STOP_SCAN)) {
-            bluetoothAdapter.stopLeScan(this);
-            callbackContext.success();
-        } else if (action.equals(CONNECT)) {
-            String macAddress = args.getString(0);
-            connect(callbackContext, macAddress);
-        } else if (action.equals(DISCONNECT)) {
-            String macAddress = args.getString(0);
-            disconnect(callbackContext, macAddress);
-        } else if (action.equals(START_NOTIFICATION)) {
-            startNotification(callbackContext);
-        } else if (action.equals(STOP_NOTIFICATION)) {
-            stopNotification(callbackContext);
-        } else if (action.equals(CONFIRM_TIME)) {
-            confirmTime();
-        } else if (action.equals(CONFIG_WEIGHING_MODE)) {
-            int unit = args.getInt(0);
-            int mode = args.getInt(1);
-            configWeighingMode(callbackContext, unit, mode);
-        } else if (action.equals(SETUP_PARAMETER)) {
-            int accountId = args.getInt(0);
-            int sex = args.getInt(1);
-            int age = args.getInt(2);
-            int height = args.getInt(3);
-            setParameter(callbackContext, accountId, sex, age, height);
-        } else {
-            validAction = false;
-        }
-
-        return validAction;
+        return true;
     }
 
     private void startScan(CallbackContext callbackContext) {
         // clear non-connected cached peripherals
-        for(Iterator<Map.Entry<String, Peripheral>> iterator = peripherals.entrySet().iterator(); iterator.hasNext(); ) {
+        for (Iterator<Map.Entry<String, Peripheral>> iterator = peripherals.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry<String, Peripheral> entry = iterator.next();
-            if(!entry.getValue().isConnected()) {
-                iterator.remove();
-            }
+            iterator.remove();
         }
 
         discoverCallback = callbackContext;
@@ -128,11 +124,19 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
         callbackContext.sendPluginResult(result);*/
     }
 
+    private void stopScan(CallbackContext callbackContext) {
+        bluetoothAdapter.stopLeScan(this);
+        callbackContext.success();
+    }
+
     private void connect(CallbackContext callbackContext, String macAddress) {
         //todo
         Peripheral peripheral = peripherals.get(macAddress);
         if (peripheral != null) {
+            connectCallback = callbackContext;
+
             BTLinkerUtils.connect(macAddress);
+            ReceiveDeviceDataService.setBtlinkerDataListener(this);
         } else {
             callbackContext.error("Peripheral " + macAddress + " not found.");
         }
@@ -152,16 +156,16 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
         callbackContext.success();
     }
 
-    private void confirmTime() {
-
+    private void confirmTime(CallbackContext callbackContext) {
+        ReceiveDeviceDataService.sendElectronicScalesConfirmTime();
     }
 
     private void configWeighingMode(CallbackContext callbackContext, int unit, int mode) {
-
+        ReceiveDeviceDataService.sendElectronicScalesConfigWeighingMode(unit, mode);
     }
 
     private void setupParameter(CallbackContext callbackContext, int accountId, int sex, int age, int height) {
-
+        ReceiveDeviceDataService.sendElectronicScalesSetupParameter(accountId, sex, age, height);
     }
 
     @Override
@@ -180,10 +184,10 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
                 discoverCallback.sendPluginResult(result);
             }
 
-        } else {
-            // this isn't necessary
-            Peripheral peripheral = peripherals.get(address);
-            peripheral.updateRssi(rssi);
+//        } else {
+//            // this isn't necessary
+//            Peripheral peripheral = peripherals.get(address);
+//            peripheral.updateRssi(rssi);
         }
 
         // TODO offer option to return duplicates
@@ -193,7 +197,7 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
+        /*if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
 
             if (resultCode == Activity.RESULT_OK) {
                 LOG.d(TAG, "User enabled Bluetooth");
@@ -208,7 +212,38 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
             }
 
             enableBluetoothCallback = null;
+        }*/
+    }
+
+    @Override
+    public void getMusicbr(String s) {
+
+    }
+
+    @Override
+    public void getBluetoothData(Map<String, String> map) {
+        LOG.i(TAG, "receive data = " + map);
+        if (notificationCallback != null) {
+            PluginResult result = new PluginResult(PluginResult.Status.OK, new JSONObject(map));
+            notificationCallback.sendPluginResult(result);
         }
     }
 
+    @Override
+    public void getBluetoothConnectState(boolean b) {
+        LOG.i(TAG, "getBluetoothConnectState = " + b);
+        if ( b && connectCallback != null) {
+            connectCallback.success();
+        }
+    }
+
+    @Override
+    public void getBluetoothRSSI(int i) {
+        LOG.i(TAG, "getBluetoothRSSI = " + i);
+    }
+
+    @Override
+    public void getBluetoothWriteState(boolean b) {
+        LOG.i(TAG, "getBluetoothWriteState = " + b);
+    }
 }
