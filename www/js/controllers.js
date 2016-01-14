@@ -31,11 +31,14 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             });
             AccountService.login($scope.data).success(function (response) {
                 if (response.success) {
+                    var userData = response.data;
+                    if (!userData.accountName) {
+                        userData.firstLogin = true;
+                    }
                     StorageHelper.set('hasLogin', true);
-                    StorageHelper.set('token', response.data.token);
-                    StorageHelper.set('parentAccountId', response.data.accountId);
-                    //StorageHelper.set('defaultAccountId', response.data.accountId);
-                    StorageHelper.setObject('userData', response.data);
+                    StorageHelper.set('token', userData.token);
+                    StorageHelper.set('parentAccountId', userData.accountId);
+                    StorageHelper.setObject('userData', userData);
                     $ionicLoading.hide();
                     $state.go("tab.check");
                 } else {
@@ -111,9 +114,9 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
     .controller('checkCtrl', function ($scope, $ionicPlatform, $state, $ionicPopup, BleService, PhyIndexService, StorageHelper, BleManager, Conf) {
         $scope.data = StorageHelper.getObject('userData');
-        //if (!$scope.data.accountName) {
-        //    $state.go('accountEdit', {accountId: $scope.data.accountId, hideBack: true});
-        //}
+        if (!$scope.data.accountName) {
+            $state.go('accountEdit', {accountId: $scope.data.accountId});
+        }
         $scope.labels = ["Download Sales", "In-Store Sales"];
         $scope.chartData = [900, 100];
         $scope.chartOptions = {
@@ -151,10 +154,6 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
         $scope.connect = function (device, failure) {
             BleService.connect(device.id, function () {
-                $ionicPopup.alert({
-                    title: 'hehe',
-                    template: '连接成功'
-                });
                 // 1、同步时钟
                 BleService.confirmTime();
                 // 2、设置个人信息
@@ -427,20 +426,10 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             $scope.data = {};
             $scope.title = '添加账号信息';
         }
-        //todo
-        $scope.hideBack = $stateParams.hideBack || false;
-        $ionicPopup.alert({
-            title: $stateParams.hideBack,
-            template: $scope.hideBack
-        });
         $scope.cancel = function () {
             $ionicHistory.goBack();
         };
         $scope.submit = function () {
-            $ionicPopup.alert({
-                title: 'alert',
-                template: 'edit'
-            });
             if ($scope.data.accountName == undefined || $scope.data.accountName == '') {
                 $ionicPopup.alert({
                     title: '提示',
@@ -475,8 +464,11 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             if ($stateParams.accountId) {
                 AccountService.edit($scope.data).success(function (data) {
                     if (data.success) {
+                        if ($scope.data.firstLogin) {
+                            $scope.data.firstLogin = false;
+                        }
                         var defaultAccount = StorageHelper.getObject('userData');
-                        if (data.accountId == defaultAccount.accountId) {
+                        if ($scope.data.accountId == defaultAccount.accountId) {
                             StorageHelper.setObject('userData', $scope.data);
                         }
                         $ionicPopup.alert({
