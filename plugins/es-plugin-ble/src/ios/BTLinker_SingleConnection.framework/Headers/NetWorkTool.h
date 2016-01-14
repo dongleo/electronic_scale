@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-
+#import "SendDataToDevice.h"
 @protocol NetWorkDelegate <NSObject>
 
 
@@ -39,5 +39,7 @@ id<NetWorkDelegate>delegate;
 
 - (void)downloadFileURL:(NSMutableArray *)aFileName;
 
-
+- (void)downloadNordicFileURL:(NSString *)FileName :(CBPeripheral*)peripheral :(id)myself;
+//nordic type:1,   ti:type:0
+-(void)checkVersion:(int)type :(NSString*)FirmwareVersion;
 @end

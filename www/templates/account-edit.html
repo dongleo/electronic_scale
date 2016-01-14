@@ -3,7 +3,7 @@
         <!-- TODO nav-back-button 不显示-->
         <!--<ion-nav-back-button class="button-icon icon ion-ios-arrow-back">取消</ion-nav-back-button>-->
         <ion-nav-buttons side="left">
-          <button class="button button-icon icon ion-ios-arrow-back" ng-click="cancel()"></button>
+          <button class="button button-icon icon ion-ios-arrow-back" ng-show="!hideBack" ng-click="cancel()"></button>
         </ion-nav-buttons>
     </ion-nav-bar>
     <ion-content padding="false" class="has-header">

@@ -112,7 +112,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
     .controller('checkCtrl', function ($scope, $ionicPlatform, $state, $ionicPopup, BleService, PhyIndexService, StorageHelper, BleManager, Conf) {
         $scope.data = StorageHelper.getObject('userData');
         //if (!$scope.data.accountName) {
-        //    $state.go('edit');
+        //    $state.go('accountEdit', {accountId: $scope.data.accountId, hideBack: true});
         //}
         $scope.labels = ["Download Sales", "In-Store Sales"];
         $scope.chartData = [900, 100];
@@ -151,10 +151,14 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
         $scope.connect = function (device, failure) {
             BleService.connect(device.id, function () {
+                $ionicPopup.alert({
+                    title: 'hehe',
+                    template: '连接成功'
+                });
                 // 1、同步时钟
                 BleService.confirmTime();
                 // 2、设置个人信息
-                BleService.setParameter(1, 1, 25, 173);
+                BleService.setupParameter(1, 1, 25, 173);
                 // 3、设置单位
                 BleService.configWeighingMode(Conf.DEFAULT_UNIT, Conf.DEFAULT_MODE);
             }, failure);
@@ -418,10 +422,17 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         $scope.waistlineDic = Conf.waistlineDic;
         if ($stateParams.accountId) {
             $scope.data = AccountService.getAccount($stateParams.accountId);
+            $scope.title = '编辑账号信息';
         } else {
             $scope.data = {};
             $scope.title = '添加账号信息';
         }
+        //todo
+        $scope.hideBack = $stateParams.hideBack || false;
+        $ionicPopup.alert({
+            title: $stateParams.hideBack,
+            template: $scope.hideBack
+        });
         $scope.cancel = function () {
             $ionicHistory.goBack();
         };

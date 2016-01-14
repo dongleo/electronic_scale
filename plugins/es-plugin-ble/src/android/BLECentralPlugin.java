@@ -60,6 +60,16 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
     Map<String, Peripheral> peripherals = new LinkedHashMap<String, Peripheral>();
 
     @Override
+    protected void pluginInitialize() {
+        super.pluginInitialize();
+
+        // 初始化蓝牙SDK
+        Activity activity = cordova.getActivity();
+        Intent dataIntent = new Intent(activity, ReceiveDeviceDataService.class);
+        activity.startService(dataIntent);
+    }
+
+    @Override
     public boolean execute(final String action, final CordovaArgs args, final CallbackContext callbackContext) {
         cordova.getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -135,8 +145,9 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
         if (peripheral != null) {
             connectCallback = callbackContext;
 
-            BTLinkerUtils.connect(macAddress);
+            ReceiveDeviceDataService.isrunconnect = true;
             ReceiveDeviceDataService.setBtlinkerDataListener(this);
+            BTLinkerUtils.connect(macAddress);
         } else {
             callbackContext.error("Peripheral " + macAddress + " not found.");
         }
@@ -225,6 +236,7 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
         LOG.i(TAG, "receive data = " + map);
         if (notificationCallback != null) {
             PluginResult result = new PluginResult(PluginResult.Status.OK, new JSONObject(map));
+            result.setKeepCallback(true);
             notificationCallback.sendPluginResult(result);
         }
     }
@@ -234,6 +246,9 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
         LOG.i(TAG, "getBluetoothConnectState = " + b);
         if ( b && connectCallback != null) {
             connectCallback.success();
+//            ReceiveDeviceDataService.sendElectronicScalesConfirmTime();
+//            ReceiveDeviceDataService.sendElectronicScalesConfigWeighingMode(0, 1);
+//            setupParameter(null, 1, 1, 21, 177);
         }
     }
 

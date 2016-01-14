@@ -110,6 +110,10 @@ services.service('StorageHelper', function ($window) {
                 if (!accountId) {
                     return null;
                 }
+                var defaultAccount = StorageHelper.getObject('userData');
+                if (defaultAccount.accountId == accountId) {
+                    return defaultAccount;
+                }
                 var accountList = StorageHelper.getObject('accountList');
                 for (var i = 0; i < accountList.length; i++) {
                     if (accountId == accountList[i].accountId) {

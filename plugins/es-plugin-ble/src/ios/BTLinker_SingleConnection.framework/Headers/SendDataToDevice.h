@@ -18,9 +18,13 @@
 @optional
 
 -(void)getPeripheralsForScan:(CBPeripheral*)peripheral;
--(void)getBluetoothState:(BOOL)State;
+/*
+ *获取蓝牙与设备的状态
+ *@param State : 0(断开)，1（链接），2表示（链接成功需要ota升级）
+ */
+-(void)getBluetoothState:(int)State;
 -(void)getBluetoothDataForScale:(NSDictionary*)dic;
--(void)getBluetoothData:(NSString*)bluethoothData;
+-(void)getBluetoothData:(NSDictionary*)bluethoothDataDic;
 /*
  *@discussion :ota升级返回当前包数跟总包数
  *@param indexPack:当前包
@@ -33,14 +37,16 @@
 @interface SendDataToDevice : NSObject{
    
 }
+@property (strong, nonatomic) CBPeripheral *PeripheralInstance;
+
 @property(nonatomic,weak)id<sendDelegate>delegate;
 
 /*
- *@discussion :得到实例化(单例模式)
+ *@discussion :得到实例(单例模式)
  */
 +(SendDataToDevice*)getSendDataToDeviceInstance;
 
-
+-(void)myInit;
 
 /*
  *@discussion :开始扫描设备
@@ -52,6 +58,10 @@
 -(void)stopScanningDevice;
 //xju new begin
 
+/*
+ *@discussion :获取系统已经链接的设备，回调getBluetoothState，State为1 的时候可以行直接对蓝牙进行数据操作
+ */
+-(int)getConnectingDevice:(NSString*)uuid;
 /*
  *@discussion :连接设备
  *@param peripheral:要链接的对象
@@ -81,27 +91,76 @@
 //手环协议
 /*
  *@discussion :发送运动命令
+ *返回结果:dic{
+ *head (@"8111b5"),
+ @"steps":(NSString),步数
+ @"kilometer" :(NSString),公里数
+ @"calories" :(NSString),卡路里
+ @"sleepTime":(int)睡眠时间,单位分
+ @"walkTime":(int)走路时间,单位分
+ @"jogTime":(int)健步时间,单位分
+ @"runTime":（int）跑步时间,单位分
+ @"officeTime":（int）工作时间，单位分
  */
 -(void)SendSportCommand;
 
 /*
  *@discussion :发送睡眠命令
+ *返回的结果 :dic{
+ *head(@"8111b9"),
+ @"sleepDataArray":(NSMutableArray),睡眠数据
+ @"begin_hour":(int),开始时间小时
+ @"iend_hour":(int),结束时间小时
+ @"starPoint":(int),从第几个点开始
+ @"isleepTime":(int),总的睡眠时间
+ *}
  */
 -(void)SendSleepCommand;
 /*
  *@discussion :发送温度命令(没有温度ic的设备不支持此命令)
+ *返回结果:dic{
+ @"head":@"8111d1",
+ @"symbol":(int), 0(+),1(-) ，温度正负
+ @"TemperatureValueInt":（int）， 温度值
+ }
  */
 -(void)SendTemperatureCommand;
+
+/*
+ *@discussion :发送温湿度命令(没有温湿度ic的设备不支持此命令)
+ *返回结果:dic{
+ @"head":@"8111b6",
+ @"symbol":(int), 0(+),1(-) ，温度正负
+ @"temp":（int）， 温度值
+ @"hum":（int）， 湿度值
+ }
+ */
+-(void)SendHumitureCommand;
+
 /*
  *@discussion :发送紫外线命令(没有紫外线ic的设备不支持此命令)
+ 返回结果:dic{
+ @"head":@"8111bf",
+ @"UltravioletValueStr":(NSString) uv的16进制值 当为ffff时候表示不支持紫外线
+ @"uvProgress":（float）:uv的级数
+ }
  */
 -(void)SendUltravioletCommand;
 /*
  *@discussion :发送时间命令
+ *返回结果:dic{
+ @"head":@"8111b7"
+ }
  */
 -(void)SendTimeCommand;
 /*
  *@discussion :发送版本号电量命令
+ *返回结果:dic{
+ @"head":@"8111be",
+ @"VersionDataStr":(NSString),固件版本号
+ @"BatteryDataStr":(NSString),固件电池电量
+ @"time":(NSString)固件当前时间
+
  */
 -(void)SendVersionBatteryCommand;
 
@@ -114,19 +173,47 @@
  *@param walkStride:走路步长
  *@param jogStride:健步步长
  *@param runStride:跑步步长
+ *返回的结果 :dic{
+ @"head":@"8111b2"
+ }
  */
 -(void)SendPersonalInformationCommand:(int)height :(int)weight :(int)targetCalories :(int)sex :(int)walkStride :(int)jogStride :(int)runStride;
 
 /*
  *@discussion :获取前一天的睡眠命令
+ *@param index:第几天，最大不能超过7
+ *返回的结果 :dic{
+ head(@"8111d3"),
+ sleepDataArray(NSMutableArray),
+ ibegin_hour(int),
+ iend_hour(int),
+ starPoint(int),
+ isleepTime(int) 
+ }
  */
 -(void)SendYesterdaySleepCommand:(int)index;
 /*
  *@discussion :获取前一天的运动命令
+ *@param index:第几天，最大不能超过7
+ *返回结果:dic{
+ *head (@"8111d4"),
+ @"steps":(NSString),步数
+ @"kilometer" :(NSString),公里数
+ @"calories" :(NSString),卡路里
+ @"sleepTime":(int)睡眠时间,单位分
+ @"walkTime":(int)走路时间,单位分
+ @"jogTime":(int)健步时间,单位分
+ @"runTime":（int）跑步时间,单位分
+ @"officeTime":（int）工作时间，单位分
  */
 -(void)SendYesterdaySportCommand:(int)index;
 /*
  *@discussion :设备按键功能
+ *返回的结果 :dic{
+ 
+ @"head":@"8111b0"
+
+ }
  */
 -(void)SendSearchCommand;
 
@@ -142,6 +229,13 @@
 
 /*
  *@discussion :请求健步，跑步，慢行步数
+ *@param index:第几天，最大不能超过7
+ *返回的结果 :dic{
+ @"head":@"8111d8",
+ @"Twalk":(NSString),当天走路步数
+ @"Tjog":(NSString),当天健步步数
+ @"Trun":(NSString),当天跑步步数
+ }
  */
 -(void)SendStepNumber:(int)index;
 
@@ -188,18 +282,24 @@
  *clock3分钟。
  *}
  
- 
+ 返回的结果 :无
  */
 
 -(void)SendClockCommand :(NSMutableArray*)Clock :(NSMutableArray*)Week :(NSMutableArray*)Hour :(NSMutableArray*)min;
 
 /*
  *@discussion :让设备进入高速传输模式，电流会变大
+ *返回的结果 :dic={
+  @"head":@"8111d9"
+ }
  */
 -(void)HighSpeed;
 
 /*
  *@discussion :让设备进入低速传输模式，电流会变小
+ *返回的结果 :dic={
+ @"head":@"8111d9"
+ }
  */
 -(void)LowSpeed;
 
@@ -210,15 +310,25 @@
  *@param notify 消息:1为开0位关，
  *@param callphone 来电:1为开，0为关
  *@param discon:断开提醒:1为开，0为关
- *
+ *返回的结果 :dic={
+ @"head":@"8111f1",
+ @"callSwitch" :(int),1(开)，0（关）来电开关
+ @"notifySwitch" :(int),1(开)，0（关）通知开关
+ @"dis" :(int)，1(开)，0（关）断开提醒开关
  */
 -(void)SetSwitchState:(int)notify :(int)callphone :(int)discon;
 /*
  *@discussion :请求设备开关的状态
+ *返回的结果 :dic={
+ @"head":@"8111f2",
+ @"callSwitch" :(int),1(开)，0（关）来电开关
+ @"notifySwitch" :(int),1(开)，0（关）通知开关
+ @"dis" :(int)，1(开)，0（关）断开提醒开关
  */
 -(void)GetSwitchState;
 /*
  *@discussion :升级的时候需要强制转到a区,设备会重新启动，只能搜索到a的服务（升级的服务）
+ *返回的结果:无
  */
 -(void)OADcomeA;
 
@@ -234,6 +344,11 @@
  *@param day:第几天
  *@param packTotal:总包数默认为1
  *@param packIndex:第几个包，默认为1
+ *返回结果:dic{
+ head(@"e10303"),
+ OneHourSportData(NSString) 每小时的运动数据
+ 
+ }
  */
 -(void) sendOneHourSport:(int)day :(int)packTotal :(int)packIndex;
 
@@ -243,10 +358,29 @@
 -(BOOL)getDeviceState;
 /*
  *@discussion :手机主动链接设备提醒
+ *返回的结果:无
  */
 -(void)setConnectShow;
 
+/*
+ *来电提醒
+ *@param motor:1表示马达开启，0表示马达关闭
+ */
+-(void)SendCallPhoneCommand:(int)motor;
+/*
+ *电话挂断，未接，接听等操作
+ */
+-(void)SendMissCallPhoneCommand;
 
+/*
+ *用户手动杀掉app的时候跑这个函数来重连
+ */
+//-(void)RconnectForAppKillCommand :(NSString *)suuid;
+
+/*
+ *解除绑定
+ */
+-(void)removeBondCommand;
 
 /*
  *@discussion :设置ota升级数据，内部使用
@@ -257,6 +391,38 @@
  *@discussion :开始ota配置
  */
 -(void)startOADconfig;
+
+
+/*
+ *@discussion :带ancs
+＊@param versinon:  当前的系统版本 如9.1.0
+ */
+-(void)openAncs:(NSString*)versinon;
+
+
+/*
+ *@discussion :心率 
+＊@param ：mode:1表示开，0表示关
+ */
+-(void)SendHeartRate:(int)mode;
+
+
+//noridc ota begin
+/*
+ *@discussion :nordic ota 配置内部使用
+ ＊@param ：mode:1表示开，0表示关
+ */
+-(void)OTAConfig:(NSData*)data :(CBPeripheral*)peripheral :(id)myself;
+-(void)beginOTA;
+
+//nordic ota end
+
+
+/*
+ *@discussion :写入数据
+ *@param ：data: 要写入的数据
+ */
+-(void)writeToDevice:(NSData*)data;
 
 //xju new end
 
@@ -323,7 +489,7 @@
 -(void)ElectronicScalesSetModuleName:(NSString*) deviceName;
 
  /*
-  *配置电子秤的的计量单位和模式     unit:1 kg, 2 lb,3 ST ;mode:0 称重模式,1校准模式
+  *配置电子秤的的计量单位和模式
   *@param unit:单位，1 kg, 2 lb,3 ST
   *@param mode:0 称重模式,1校准模式
   *返回结果:dic｛head（82）,result｝

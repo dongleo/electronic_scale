@@ -14,9 +14,9 @@
 
 -(NSDictionary*)AnalysisSleepData:(NSString*)sleepData;
 
--(NSString*)AnalysisYesterdaySleepData:(NSString*)sleepData;
+-(NSDictionary*)AnalysisYesterdaySleepData:(NSString*)sleepData;
 
--(NSDictionary*)AnalysisSportData:(NSString*)sportData;
+-(NSDictionary*)AnalysisSportData:(NSString*)sportData :(int)mode;
 
 -(NSDictionary*)AnalysisTemperatureData:(NSString*)TemperatureData;
 
@@ -26,12 +26,17 @@
 
 -(NSDictionary*)AnalysisSportStepNumberData:(NSString*)sportStepNumberData;
 //解析开关状态 callSwitch来电，1为开，0为关，默认为关，notifySwitch消息，1为开，0为关，默认为关，
--(NSDictionary*)AnalysisSwitchState:(NSString*)SwitchStateData;
+-(NSDictionary*)AnalysisSwitchState:(NSString*)SwitchStateData  :(int)mode;
 
 //解析一个小时的运动数据
 -(NSDictionary*)AnalysisOneHourSport:(NSString*)OneHourSportData;
 //解析获取链接断开状态
 //-(NSDictionary*)AnalysisconState:(NSString*)StateData;
+
+-(NSDictionary*)AnalysisHumitureData:(NSString*)HumitureData;
+
+//解析心率数据
+-(NSDictionary*)AnalysisHeartRateData:(NSString*)HeartRateData;
 
 
 
