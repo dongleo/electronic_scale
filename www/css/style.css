@@ -150,3 +150,31 @@
     color: #FF0404;
     font-weight: bold;
 }
+
+.phy_score {
+    position: absolute;
+    left: 0px;
+    top: -0.5em;
+    display: inline-block;
+    margin-top: 34%;
+    width: 100%;
+    z-index: 100;
+    font-size: 3em;
+    text-align: center;
+}
+
+.phy_score0 {
+    color: #4fac2a;
+}
+
+.phy_score1 {
+    color: #bb1122;
+}
+
+.phy_score2 {
+    color: #f08c04;
+}
+
+.phy_score3 {
+    color: #4fac2a;
+}

@@ -34,4 +34,15 @@ angular.module('app',
         ChartJsProvider.setOptions('Doughnut', {
             animateScale: true
         });
+    })
+    .filter('rankfilter', function() {
+        return function(rank) {
+            if (rank == 1) {
+                return '↑';
+            } else if (rank == 2) {
+                return '↓';
+            } else {
+                return '';
+            }
+        }
     });

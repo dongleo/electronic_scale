@@ -23,6 +23,9 @@ services.service('StorageHelper', function ($window) {
         },
         clear: function () {
             $window.localStorage.clear();
+        },
+        containKey: function(key) {
+            return $window.localStorage.getItem(key) != null;
         }
     }
 })
@@ -100,7 +103,7 @@ services.service('StorageHelper', function ($window) {
                 var token = StorageHelper.get('token');
                 return $http({
                     method: 'POST',
-                    url: EsConfig.API_URL + "delete/" +  account.accountId + "?accountId=" + parentAccountId + "&token=" + token,
+                    url: EsConfig.API_URL + "delete/" + account.accountId + "?accountId=" + parentAccountId + "&token=" + token,
                     headers: {
                         'Content-Type': 'application/json'
                     }
@@ -127,26 +130,38 @@ services.service('StorageHelper', function ($window) {
     .service('PhyIndexService', function ($q, $http, $ionicPopup, StorageHelper, EsConfig) {
         return {
             calcBMI: function (userData) {
-                return 21.3;
-                //return userData.weight / (userData.height * userData.height) * 10000;
+                //return 21.3;
+                return userData.weight / (userData.height * userData.height) * 10000;
             },
             calcFatRatio: function (userData) {
-                return 0.23;
-                /*var fat;
-                 if (userData.gender) {  //男
-                 fat = userData.waistline * 0.74 - (userData.weight * 0.082 + 44.74)
-                 } else {    //女
-                 fat = userData.waistline * 0.74 - (userData.weight * 0.082 + 34.89)
-                 }
-                 return fat / userData.weight;*/
+                //return 0.23;
+                var fat;
+                if (userData.gender) {  //男
+                    fat = userData.waistline * 0.74 - (userData.weight * 0.082 + 44.74)
+                } else {    //女
+                    fat = userData.waistline * 0.74 - (userData.weight * 0.082 + 34.89)
+                }
+                return fat / userData.weight;
+            },
+            calcPhyIdx: function(userData) {
+                return {
+                    // 分数
+                    score: 91,
+                    // 超越用户比例
+                    scoreRatio: 0,
+                    // 超越用户指标
+                    scoreRank:0,
+                    // 体重指标
+                    weightRank: 0,
+                    // bmi指标
+                    bmiRank: 0,
+                    // 体脂指标
+                    fatRatioRank: 0
+                };
             },
             submit: function (data) {
                 var parentAccountId = StorageHelper.get('parentAccountId');
                 var token = StorageHelper.get('token');
-                $ionicPopup.alert({
-                    title: 'submit',
-                    template: 'submit data'
-                });
                 return $http({
                     method: 'POST',
                     url: EsConfig.API_URL + "phy/submit?accountId=" + parentAccountId + "&token=" + token,
@@ -188,14 +203,19 @@ services.service('StorageHelper', function ($window) {
         return manager;
     })
     .service('BleService', function ($q) {
+        var _state = 'ready';
+        var _device_id;
         return {
             _state: 'ready',
             startScan: function (success, failure) {
-                if (this._state == 'scanning') {
+                if (_state == 'scanning') {
                     ble.stopScan();
                 }
+                if (_state == 'connect') {
+                    this.disconnect();
+                }
                 var q = $q.defer();
-                this._state = 'scanning';
+                _state = 'scanning';
                 ble.startScan(success, failure);
                 //return q.promise;
             },
@@ -206,17 +226,22 @@ services.service('StorageHelper', function ($window) {
                 }, function (error) {
                     q.reject(error);
                 });
-                this._state = 'ready';
+                _state = 'ready';
                 return q.promise;
             },
             connect: function (deviceID, success, failure) {
                 var q = $q.defer();
-                ble.connect(deviceID, success, failure);
+                ble.connect(deviceID, function() {
+                    _state = 'connect';
+                    _device_id = deviceID;
+
+                    success();
+                }, failure);
                 return q.promise;
             },
-            disconnect: function (deviceID) {
+            disconnect: function () {
                 var q = $q.defer();
-                ble.disconnect(deviceID, function (result) {
+                ble.disconnect(_device_id, function (result) {
                     q.resolve(result);
                 }, function (error) {
                     q.reject(error);

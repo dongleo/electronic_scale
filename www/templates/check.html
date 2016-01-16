@@ -10,15 +10,15 @@
     <ion-content padding="false" class="has-header">
         <div style="width: 80%;margin: 14% auto 0;">
             <div>
-                <img src="img/50.png" style="width:100%" />
+                <img src="img/phy_idx{{phy.scoreRatio || '1'}}.png" style="width:100%"/>
             </div>
             <div style="position:absolute;left:0px;top:-0.5em;display:inline-block;width:100%;z-index:100;margin:16% auto 0;">
                 <div style="position:relative;display:inline-block;width:30%;height:100px;"></div>
-                <img src="img/cloud.png" style="width:40%;" />
+                <img src="img/cloud.png" style="width:40%;"/>
             </div>
-            <div style="position:absolute;left:0px;top:-0.5em;display:inline-block;margin-top:34%;width:100%;z-index:100;font-size: 3em;text-align: center;color:#C30D23;/* #F39800 #58B530 */">
+            <div class="phy_score phy_score{{phyidx.scoreRatio || '0'}}">
                 <strong>
-                    51分
+                    {{phyIdx.score || '--'}}分
                 </strong>
             </div>
         </div>
@@ -32,7 +32,7 @@
                 <div class="idx_circle idx_weight">
                     <span class="idx_content">
                         {{data.weight || '--'}}kg<br/>
-                        体重↑
+                        体重{{phyIdx.weightRank | rankfilter}}
                     </span>
                 </div>
             </div>
@@ -41,7 +41,7 @@
                 <div class="idx_circle idx_bmi">
                     <div class="idx_content">
                         {{data.bmi || '--'}}<br/>
-                        BMI↓
+                        BMI{{phyIdx.bmiRank | rankfilter}}
                     </div>
                 </div>
             </div>
@@ -49,16 +49,42 @@
                 <div class="idx_circle idx_fat">
                     <div class="idx_content">
                         {{data.fatRatio * 100 || '--'}}%<br/>
-                        脂肪↑
+                        脂肪{{phyIdx.fatRatioRank | rankfilter}}
                     </div>
                 </div>
             </div>
         </div>
-        <div class="msg_title">
-            诗琳美恭喜您！
+        <div ng-if="waitToScale">
+            <div class="msg_title">
+                诗琳美提醒您！
+            </div>
+            <div class="msg_content">
+                请站上秤开始我们的健康之旅吧！
+            </div>
         </div>
-        <div class="msg_content">
-            您成功击败了<span class="msg_rate">91.4%</span>的用户，<br/>太强悍了！
+        <div ng-if="scoreRank == 0">
+            <div class="msg_title">
+                诗琳美提醒您！
+            </div>
+            <div class="msg_content">
+                您只击败了<span class="msg_rate">{{scoreRatio}}%</span>的用户，<br/>需要努力了！
+            </div>
+        </div>
+        <div ng-if="scoreRank == 1">
+            <div class="msg_title">
+                诗琳美恭喜您！
+            </div>
+            <div class="msg_content">
+                您成功击败了<span class="msg_rate">{{scoreRatio}}%</span>的用户，<br/>太强悍了！
+            </div>
+        </div>
+        <div ng-if="scoreRank == 2">
+            <div class="msg_title">
+                诗琳美恭喜您！
+            </div>
+            <div class="msg_content">
+                您成功击败了<span class="msg_rate">{{scoreRatio}}%</span>的用户，<br/>太强悍了！
+            </div>
         </div>
     </ion-content>
 </ion-view>

@@ -5,7 +5,8 @@ controllers.value('Conf', {
     'waistlineDic': [30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180],
     'DEFAULT_UNIT': 1,
     'DEFAULT_MODE': 0,
-    'SCAN_TIMEOUT': 10
+    'SCAN_TIMEOUT': 10,
+    'LOCK_HEAD': '02'
 });
 
 controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ionicLoading, StorageHelper, AccountService) {
@@ -114,18 +115,18 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
     .controller('checkCtrl', function ($scope, $ionicPlatform, $state, $ionicPopup, BleService, PhyIndexService, StorageHelper, BleManager, Conf) {
         $scope.data = StorageHelper.getObject('userData');
+        $scope.phyIdx = {};
+        if (StorageHelper.containKey('phyIdx')) {
+            $scope.phyIdx = StorageHelper.getObject('phyIdx');
+        } else {
+            $scope.waitToScale = true;
+        }
         if (!$scope.data.accountName) {
             $state.go('accountEdit', {accountId: $scope.data.accountId});
         }
-        $scope.labels = ["Download Sales", "In-Store Sales"];
-        $scope.chartData = [900, 100];
-        $scope.chartOptions = {
-            percentageInnerCutout: 80,
-            showTooltips: false
-        };
 
-        function formatNumber(number) {
-            return number < 0 ? (number + 256) : number;
+        function calAge(birthStr) {
+            return new Date().getFullYear() - new Date(birthStr).getFullYear();
         }
 
         $scope.goToEdit = function () {
@@ -157,28 +158,45 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 // 1、同步时钟
                 BleService.confirmTime();
                 // 2、设置个人信息
-                BleService.setupParameter(1, 1, 25, 173);
+                BleService.setupParameter($scope.data.accountId, parseInt($scope.data.gender), calAge($scope.data.brith), parseInt($scope.data.height));
                 // 3、设置单位
                 BleService.configWeighingMode(Conf.DEFAULT_UNIT, Conf.DEFAULT_MODE);
             }, failure);
             BleService.startNotification($scope.receiveData);
         };
         $scope.receiveData = function (data) {
-            $scope.bleData = data;
-            $scope.data.weight = (formatNumber(parseInt(data[3])) << 8) | formatNumber(parseInt(data[4]));
-            $scope.data.weight /= 10;
-            $scope.data.bmi = PhyIndexService.calcBMI($scope.data);
-            $scope.data.fatRatio = PhyIndexService.calcFatRatio($scope.data);
+            if (data.Head == Conf.LOCK_HEAD && !$scope.bleData) {
+                $scope.bleData = data;
+                $scope.data.weight = parseInt($scope.data.LockWeight, 16) / 10;
+                $scope.data.bmi = PhyIndexService.calcBMI($scope.data);
+                $scope.data.fatRatio = PhyIndexService.calcFatRatio($scope.data);
 
-            StorageHelper.setObject('userData', $scope.data);
+                StorageHelper.setObject('userData', $scope.data);
 
-            PhyIndexService.submit($scope.data);
+                PhyIndexService.submit($scope.data).success(function (response) {
+                    if (response.success) {
+                        $scope.phyIdx = PhyIndexService.calcPhyIdx($scope.data);
+                        $scope.phyIdx.scoreRatio = response.data.scoreRatio;
+
+                        if ($scope.phyIdx.scoreRatio < 60) {
+                            $scope.phyIdx.scoreRank = 0;
+                        } else if ($scope.phyIdx.scoreRatio < 80) {
+                            $scope.phyIdx.scoreRank = 1;
+                        } else {
+                            $scope.phyIdx.scoreRank = 2;
+                        }
+                        StorageHelper.setObject('phyIdx', $scope.phyIdx);
+                    }
+                }).error(function () {
+                    $ionicPopup.alert({
+                        title: '提示',
+                        template: '网络不可用'
+                    });
+                });
+            }
         };
 
         $scope.connectFail = function () {
-        };
-        $scope.refreshData = function () {
-            //TODO 动画效果
         };
         $scope.$on('$ionicView.beforeEnter', function () {
             if (BleManager.selectedBle) {
@@ -210,7 +228,6 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             $scope.selectedBle = device;
         };
         $scope.scan = function () {
-            //TODO $cordovaBLE收不到回调
             BleService.startScan(function (device) {
                 $ionicLoading.hide();
                 $scope.scanCallback(device);
@@ -244,32 +261,26 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         $scope.waistlineDic = Conf.waistlineDic;
         $scope.data = StorageHelper.getObject('userData');
         $scope.tel = parseInt($scope.data.tel);
+        $scope.data.birth = new Date($scope.data.birth);
         $scope.cancel = function () {
             $ionicHistory.goBack();
         };
 
         $scope.edit = function () {
             $scope.data.tel = $scope.tel;
-            //$scope.data.birth = $scope.birth;
-
-            /*if ($scope.data.tel == undefined || $scope.data.tel == '') {
-             $ionicPopup.alert({
-             title: '提示',
-             template: '手机号不能为空！'
-             });
-             return;
-             } */
             if ($scope.data.accountName == undefined || $scope.data.accountName == '') {
                 $ionicPopup.alert({
                     title: '提示',
                     template: '昵称不能为空！'
                 });
                 return;
-                /*} else if ($scope.data.birth == undefined || $scope.data.birth == '') {
-                 $ionicPopup.alert({
-                 title: '提示',
-                 template: '生日不能为空！'
-                 });*/
+            }
+            if ($scope.data.birth == undefined || $scope.data.birth == '') {
+                $ionicPopup.alert({
+                    title: '提示',
+                    template: '生日不能为空！'
+                });
+                return;
             }
             if ($scope.data.gender == undefined || $scope.data.gender == '') {
                 $ionicPopup.alert({
@@ -416,11 +427,12 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         });
     })
 
-    .controller('accountEditCtrl', function ($scope, $state, $stateParams, $ionicHistory, $ionicLoading, $ionicPopup, Conf, StorageHelper, AccountService) {
+    .controller('accountEditCtrl', function ($scope, $filter, $state, $stateParams, $ionicHistory, $ionicLoading, $ionicPopup, Conf, StorageHelper, AccountService) {
         $scope.heightDic = Conf.heightDic;
         $scope.waistlineDic = Conf.waistlineDic;
         if ($stateParams.accountId) {
             $scope.data = AccountService.getAccount($stateParams.accountId);
+            $scope.data.birth = new Date($scope.data.birth);
             $scope.title = '编辑账号信息';
         } else {
             $scope.data = {};
@@ -441,6 +453,13 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 $ionicPopup.alert({
                     title: '提示',
                     template: '性别不能为空！'
+                });
+                return;
+            }
+            if ($scope.data.birth == undefined || $scope.data.birth == '') {
+                $ionicPopup.alert({
+                    title: '提示',
+                    template: '生日不能为空！'
                 });
                 return;
             }
@@ -521,4 +540,17 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
     .controller('chartsCtrl', function ($scope, $state) {
 
+    })
+
+    .controller('aboutCtrl', function ($scope, $state, $http, $sce, $ionicPopup) {
+        $http({
+            method: 'GET',
+            url: 'http://www.baidu.com'
+        }).success(function (response) {
+            $ionicPopup.alert({
+                title: '响应',
+                template: response
+            });
+            $scope.trustedBody = $sce.trustAsHtml(response);
+        });
     });

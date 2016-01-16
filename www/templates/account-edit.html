@@ -16,10 +16,10 @@
                     <span class="input-label">昵称</span>
                     <input type="text" ng-model="data.accountName" placeholder="">
                 </label>
-                <!--<label class="item item-input item-stacked-label">
+                <label class="item item-input item-stacked-label">
                   <span class="input-label">生日</span>
-                  <input type="date" ng-model="data.birth" ng-change="change()">
-                </label>-->
+                  <input type="date" ng-model="data.birth" value="{{data.birth}}">
+                </label>
                 <label class="item item-input item-select item-stacked-label">
                     <span class="input-label">性别</span>
                     <select ng-model="data.gender">
@@ -28,6 +28,7 @@
                     </select>
                 </label>
 
+                <div class="spacer" style="height: 20px;"></div>
                 <div class="item item-divider">
                     身体数据
                 </div>
