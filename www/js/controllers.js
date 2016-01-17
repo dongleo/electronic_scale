@@ -2,7 +2,7 @@ var controllers = angular.module('app.controllers', []);
 
 controllers.value('Conf', {
     'heightDic': [80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220],
-    'waistlineDic': [30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180],
+    'hipAndWaistlineDic': [30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180],
     'DEFAULT_UNIT': 1,
     'DEFAULT_MODE': 0,
     'SCAN_TIMEOUT': 10,
@@ -114,17 +114,6 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
     })
 
     .controller('checkCtrl', function ($scope, $ionicPlatform, $state, $ionicPopup, BleService, PhyIndexService, StorageHelper, BleManager, Conf) {
-        $scope.data = StorageHelper.getObject('userData');
-        $scope.phyIdx = {};
-        if (StorageHelper.containKey('phyIdx')) {
-            $scope.phyIdx = StorageHelper.getObject('phyIdx');
-        } else {
-            $scope.waitToScale = true;
-        }
-        if (!$scope.data.accountName) {
-            $state.go('accountEdit', {accountId: $scope.data.accountId});
-        }
-
         function calAge(birthStr) {
             return new Date().getFullYear() - new Date(birthStr).getFullYear();
         }
@@ -155,37 +144,41 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
         $scope.connect = function (device, failure) {
             BleService.connect(device.id, function () {
+                $ionicPopup.alert({
+                    title: '提示',
+                    template: '请站上秤开始健康之旅！'
+                });
                 // 1、同步时钟
                 BleService.confirmTime();
                 // 2、设置个人信息
-                BleService.setupParameter($scope.data.accountId, parseInt($scope.data.gender), calAge($scope.data.brith), parseInt($scope.data.height));
+                BleService.setupParameter($scope.data.accountId, parseInt($scope.data.gender), $scope.data.age, parseInt($scope.data.height));
                 // 3、设置单位
                 BleService.configWeighingMode(Conf.DEFAULT_UNIT, Conf.DEFAULT_MODE);
             }, failure);
             BleService.startNotification($scope.receiveData);
         };
         $scope.receiveData = function (data) {
-            if (data.Head == Conf.LOCK_HEAD && !$scope.bleData) {
+            if (data.head == Conf.LOCK_HEAD && !$scope.bleData) {
+                $ionicPopup.alert({
+                    title: 'receiveData',
+                    template: JSON.stringify(data)
+                });
                 $scope.bleData = data;
-                $scope.data.weight = parseInt($scope.data.LockWeight, 16) / 10;
-                $scope.data.bmi = PhyIndexService.calcBMI($scope.data);
-                $scope.data.fatRatio = PhyIndexService.calcFatRatio($scope.data);
+                $scope.phyIdx.weight = parseInt(data.LockWeight, 16) / 10;
+                $scope.phyIdx.bmi = PhyIndexService.calcBMI($scope.phyIdx, $scope.data);
+                $scope.phyIdx.fatRatio = PhyIndexService.calcFatRatio($scope.phyIdx, $scope.data);
 
-                StorageHelper.setObject('userData', $scope.data);
+                $ionicPopup.alert({
+                    title: 'hehe',
+                    template: JSON.stringify($scope.phyIdx)
+                });
+                //StorageHelper.setObject('userData', $scope.data);
 
-                PhyIndexService.submit($scope.data).success(function (response) {
+                PhyIndexService.submit($scope.phyIdx, $scope.data).success(function (response) {
                     if (response.success) {
-                        $scope.phyIdx = PhyIndexService.calcPhyIdx($scope.data);
                         $scope.phyIdx.scoreRatio = response.data.scoreRatio;
 
-                        if ($scope.phyIdx.scoreRatio < 60) {
-                            $scope.phyIdx.scoreRank = 0;
-                        } else if ($scope.phyIdx.scoreRatio < 80) {
-                            $scope.phyIdx.scoreRank = 1;
-                        } else {
-                            $scope.phyIdx.scoreRank = 2;
-                        }
-                        StorageHelper.setObject('phyIdx', $scope.phyIdx);
+                        $scope.refreshPhy();
                     }
                 }).error(function () {
                     $ionicPopup.alert({
@@ -196,12 +189,43 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             }
         };
 
+        $scope.refreshPhy = function() {
+            $scope.phyIdx = PhyIndexService.calcPhyIdx($scope.phyIdx, $scope.data);
+            if ($scope.phyIdx.scoreRatio < 60) {
+                $scope.phyIdx.scoreRank = 0;
+            } else if ($scope.phyIdx.scoreRatio < 80) {
+                $scope.phyIdx.scoreRank = 1;
+            } else {
+                $scope.phyIdx.scoreRank = 2;
+            }
+
+            StorageHelper.setObject('phyIdx', $scope.phyIdx);
+        };
+
         $scope.connectFail = function () {
         };
         $scope.$on('$ionicView.beforeEnter', function () {
             if (BleManager.selectedBle) {
                 $scope.selectedBle = BleManager.selectedBle;
                 $scope.connect($scope.selectedBle, $scope.connectFail);
+            }
+            $scope.data = StorageHelper.getObject('userData');
+            if (!$scope.data.accountName) {
+                $state.go('accountEdit', {accountId: $scope.data.accountId});
+                return;
+            } else {
+                $scope.data.age = calAge($scope.data.birth);
+            }
+
+            var _phyIdx = PhyIndexService.get($scope.data.accountId);
+            if (_phyIdx) {
+                if (!$scope.phyIdx || $scope.phyIdx.accountId != $scope.data.accountId) {
+                    $scope.phyIdx = _phyIdx;
+                    $scope.refreshPhy();
+                }
+            } else {
+                $scope.phyIdx = {};
+                $scope.waitToScale = true;
             }
         });
         $ionicPlatform.ready($scope.init);
@@ -258,10 +282,20 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
     .controller('editCtrl', function ($scope, $state, $ionicHistory, $ionicPopup, $ionicLoading, StorageHelper, Conf, AccountService) {
         $scope.heightDic = Conf.heightDic;
-        $scope.waistlineDic = Conf.waistlineDic;
-        $scope.data = StorageHelper.getObject('userData');
-        $scope.tel = parseInt($scope.data.tel);
-        $scope.data.birth = new Date($scope.data.birth);
+        $scope.waistlineDic = Conf.hipAndWaistlineDic;
+        $scope.hiplineDic = Conf.hipAndWaistlineDic;
+        $scope.$on('$ionicView.beforeEnter', function () {
+            if (StorageHelper.containKey('userData')) {
+                $scope.data = StorageHelper.getObject('userData');
+                $scope.tel = parseInt($scope.data.tel);
+                $scope.data.birth = new Date($scope.data.birth);
+            } else {
+                $scope.data.height = 175;
+                $scope.data.waistline = 80;
+                $scope.data.hipline = 90;
+                $scope.data.birth = new Date('1990-09-03');
+            }
+        });
         $scope.cancel = function () {
             $ionicHistory.goBack();
         };
@@ -344,7 +378,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         }
     })
 
-    .controller('accountCtrl', function ($scope, $state, $ionicLoading, $ionicPopup, StorageHelper, AccountService) {
+    .controller('accountCtrl', function ($scope, $state, $ionicLoading, $ionicPopup, StorageHelper, AccountService, PhyIndexService) {
         $scope.defaultAccount = StorageHelper.getObject('userData');
         $scope.data = {
             showDelete: false
@@ -389,6 +423,18 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                     $scope.data.accountList[i].isDefault = false;
                 }
             }
+            if (!PhyIndexService.get(account.accountId)) {
+                $ionicLoading.show({
+                    template: 'Loading...'
+                });
+                PhyIndexService.query(account.accountId).success(function (response) {
+                    $ionicLoading.hide();
+
+                    PhyIndexService.set(account.accountId, response, data);
+                }).error(function (error) {
+                    $ionicLoading.hide();
+                });
+            }
         };
         $scope.deleteAccount = function (account) {
             var parentAccountId = StorageHelper.get('parentAccountId');
@@ -429,14 +475,19 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
     .controller('accountEditCtrl', function ($scope, $filter, $state, $stateParams, $ionicHistory, $ionicLoading, $ionicPopup, Conf, StorageHelper, AccountService) {
         $scope.heightDic = Conf.heightDic;
-        $scope.waistlineDic = Conf.waistlineDic;
+        $scope.waistlineDic = Conf.hipAndWaistlineDic;
+        $scope.hiplineDic = Conf.hipAndWaistlineDic;
         if ($stateParams.accountId) {
             $scope.data = AccountService.getAccount($stateParams.accountId);
             $scope.data.birth = new Date($scope.data.birth);
             $scope.title = '编辑账号信息';
         } else {
-            $scope.data = {};
             $scope.title = '添加账号信息';
+            $scope.data = {};
+            $scope.data.height = 175;
+            $scope.data.waistline = 80;
+            $scope.data.hipline = 90;
+            $scope.data.birth = new Date('1990-09-03');
         }
         $scope.cancel = function () {
             $ionicHistory.goBack();
@@ -542,15 +593,18 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
     })
 
-    .controller('aboutCtrl', function ($scope, $state, $http, $sce, $ionicPopup) {
+    .controller('aboutCtrl', function ($scope, $state, $http, $ionicPopup) {
         $http({
             method: 'GET',
-            url: 'http://www.baidu.com'
+            url: 'http://app.slmbio.com/1.html'
         }).success(function (response) {
-            $ionicPopup.alert({
-                title: '响应',
-                template: response
-            });
-            $scope.trustedBody = $sce.trustAsHtml(response);
+            $scope.html = $sce.trustAsHtml(response);
         });
+
+        $scope.open = function () {
+            $ionicPopup.alert({
+                title: 'hehe',
+                template: 'Hello, World!'
+            });
+        }
     });

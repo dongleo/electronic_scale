@@ -1,4 +1,4 @@
-<ion-view title="账号信息">
+<ion-view title="关于">
     <ion-nav-bar class="bar-self">
         <!--<ion-nav-buttons side="left">
             <button class="button button-icon icon ion-ios-minus-outline" ng-click="data.showDelete = !data.showDelete"></button>
@@ -8,7 +8,7 @@
         </ion-nav-buttons>-->
     </ion-nav-bar>
     <ion-content padding="false" class="has-header">
-        <div data-ng-bind-html="trustedBody">
+        <div x-dynamic="html">
         </div>
     </ion-content>
 </ion-view>

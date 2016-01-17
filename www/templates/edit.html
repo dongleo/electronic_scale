@@ -45,6 +45,11 @@
                     <select ng-model="data.waistline" ng-options="waistline as waistline for waistline in waistlineDic">
                     </select>
                 </label>
+                <label class="item item-input item-select">
+                    <span class="input-label">臀围(cm)</span>
+                    <select ng-model="data.hipline" ng-options="hipline as hipline for hipline in hiplineDic">
+                    </select>
+                </label>
             </ion-list>
             <div class="spacer" style="height: 40px;"></div>
             <button class="button button-positive button-block " ng-click="edit()">确定</button>
