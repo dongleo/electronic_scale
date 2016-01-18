@@ -177,7 +177,7 @@ services.service('StorageHelper', function ($window) {
                         } else {
                             _weightrank = 2;
                         }
-                        ratio = math.abs(ratio);
+                        ratio = Math.abs(ratio);
                         if (ratio < 0.2) {
                             _weightscore = 70;
                         } else if (ratio < 0.3) {
@@ -356,22 +356,15 @@ services.service('StorageHelper', function ($window) {
                 _bmrScore();
                 _whrScore();
 
-                var _score = (_bmiscore + _weightscore + fatratioscore + _bmrscore + _whrscore) / 5;
+                var _score = (_bmiscore + _weightscore + _fatratioscore + _bmrscore + _whrscore) / 5;
 
-                return {
-                    // 分数
-                    score: parseInt(_score),
-                    // 超越用户比例
-                    scoreRatio: 80,
-                    // 超越用户指标
-                    //scoreRank: 2,
-                    // 体重指标
-                    weightRank: _weightrank,
-                    // bmi指标
-                    bmiRank: _bmirank,
-                    // 体脂指标
-                    fatRatioRank: _fatratiorank
-                };
+                phyIdx.score = parseInt(_score);
+                //phyIdx.scoreRatio =
+                phyIdx.weightRank = _weightrank;
+                phyIdx.bmiRank = _bmirank;
+                phyIdx.fatRatioRank = _fatratiorank;
+
+                return phyIdx;
             },
             get: function (accountId) {
                 var _phyIdxInfo = StorageHelper.getObject('phyIdxInfo');

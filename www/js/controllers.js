@@ -9,7 +9,7 @@ controllers.value('Conf', {
     'LOCK_HEAD': '02'
 });
 
-controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ionicLoading, StorageHelper, AccountService) {
+controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ionicLoading, StorageHelper, AccountService, PhyIndexService) {
     if (StorageHelper.get('hasLogin')) {
         $state.go("tab.check");
         return;
@@ -35,6 +35,21 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                     var userData = response.data;
                     if (!userData.accountName) {
                         userData.firstLogin = true;
+                    }
+                    //var phyIdx = response.data.phyIdx;
+                    // TEST
+                    var phyIdx = {
+                        accountId: response.data.accountId,
+                        weight: 65.2,
+                        bmi: 23.3,
+                        fatRatio: 15.5
+                    };
+                    userData.score = 90.1;
+                    userData.scoreRatio = 80.5;
+
+                    if (phyIdx && phyIdx.accountId) {
+                        PhyIndexService.set(phyIdx.accountId, phyIdx);
+                        userData.phyIdx = undefined;
                     }
                     StorageHelper.set('hasLogin', true);
                     StorageHelper.set('token', userData.token);
@@ -168,17 +183,16 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 $scope.phyIdx.bmi = PhyIndexService.calcBMI($scope.phyIdx, $scope.data);
                 $scope.phyIdx.fatRatio = PhyIndexService.calcFatRatio($scope.phyIdx, $scope.data);
 
-                $ionicPopup.alert({
-                    title: 'hehe',
-                    template: JSON.stringify($scope.phyIdx)
-                });
+                $scope.phyIdx = PhyIndexService.calcPhyIdx($scope.phyIdx, $scope.data);
+                PhyIndexService.set($scope.phyIdx.accountId, $scope.phyIdx);
+
                 //StorageHelper.setObject('userData', $scope.data);
 
                 PhyIndexService.submit($scope.phyIdx, $scope.data).success(function (response) {
                     if (response.success) {
-                        $scope.phyIdx.scoreRatio = response.data.scoreRatio;
-
-                        $scope.refreshPhy();
+                        $scope.data.score = $scope.phyIdx.score;
+                        $scope.data.scoreRatio = response.data.scoreRatio;
+                        $scope.calcScoreRank();
                     }
                 }).error(function () {
                     $ionicPopup.alert({
@@ -189,17 +203,29 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             }
         };
 
-        $scope.refreshPhy = function() {
+        $scope.refreshPhy = function () {
             $scope.phyIdx = PhyIndexService.calcPhyIdx($scope.phyIdx, $scope.data);
-            if ($scope.phyIdx.scoreRatio < 60) {
+
+            if ($scope.phyIdx.score != $scope.data.score) {
+                $scope.data.score = $scope.phyIdx.score;
+
+                //TODO 查询新的排名
+                $scope.calcScoreRank();
+            } else {
+                $scope.calcScoreRank();
+            }
+        };
+
+        $scope.calcScoreRank = function () {
+            //TEST
+            $scope.data.scoreRatio = 70.2;
+            if ($scope.data.scoreRatio < 60) {
                 $scope.phyIdx.scoreRank = 0;
-            } else if ($scope.phyIdx.scoreRatio < 80) {
+            } else if ($scope.data.scoreRatio < 80) {
                 $scope.phyIdx.scoreRank = 1;
             } else {
                 $scope.phyIdx.scoreRank = 2;
             }
-
-            StorageHelper.setObject('phyIdx', $scope.phyIdx);
         };
 
         $scope.connectFail = function () {
@@ -219,10 +245,8 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
             var _phyIdx = PhyIndexService.get($scope.data.accountId);
             if (_phyIdx) {
-                if (!$scope.phyIdx || $scope.phyIdx.accountId != $scope.data.accountId) {
-                    $scope.phyIdx = _phyIdx;
-                    $scope.refreshPhy();
-                }
+                $scope.phyIdx = _phyIdx;
+                $scope.refreshPhy();
             } else {
                 $scope.phyIdx = {};
                 $scope.waitToScale = true;
