@@ -189,6 +189,10 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 //StorageHelper.setObject('userData', $scope.data);
 
                 PhyIndexService.submit($scope.phyIdx, $scope.data).success(function (response) {
+                    $ionicPopup.alert({
+                        title: 'submit',
+                        template: JSON.stringify(response)
+                    });
                     if (response.success) {
                         $scope.data.score = $scope.phyIdx.score;
                         $scope.data.scoreRatio = response.data.scoreRatio;
@@ -231,6 +235,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         $scope.connectFail = function () {
         };
         $scope.$on('$ionicView.beforeEnter', function () {
+            $scope.bleData = null;
             if (BleManager.selectedBle) {
                 $scope.selectedBle = BleManager.selectedBle;
                 $scope.connect($scope.selectedBle, $scope.connectFail);
