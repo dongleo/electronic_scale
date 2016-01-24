@@ -36,16 +36,16 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                     if (!userData.accountName) {
                         userData.firstLogin = true;
                     }
-                    //var phyIdx = response.data.phyIdx;
+                    var phyIdx = response.data.phyIdx;
                     // TEST
-                    var phyIdx = {
-                        accountId: response.data.accountId,
-                        weight: 65.2,
-                        bmi: 23.3,
-                        fatRatio: 15.5
-                    };
-                    userData.score = 90.1;
-                    userData.scoreRatio = 80.5;
+                    /*var phyIdx = {
+                     accountId: response.data.accountId,
+                     weight: 65.2,
+                     bmi: 23.3,
+                     fatRatio: 15.5
+                     };
+                     userData.score = 90.1;
+                     userData.scoreRatio = 80.5;*/
 
                     if (phyIdx && phyIdx.accountId) {
                         PhyIndexService.set(phyIdx.accountId, phyIdx);
@@ -174,10 +174,6 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
         $scope.receiveData = function (data) {
             if (data.head == Conf.LOCK_HEAD && !$scope.bleData) {
-                $ionicPopup.alert({
-                    title: 'receiveData',
-                    template: JSON.stringify(data)
-                });
                 $scope.bleData = data;
                 $scope.phyIdx.weight = parseInt(data.LockWeight, 16) / 10;
                 $scope.phyIdx.bmi = PhyIndexService.calcBMI($scope.phyIdx, $scope.data);
@@ -189,14 +185,14 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 //StorageHelper.setObject('userData', $scope.data);
 
                 PhyIndexService.submit($scope.phyIdx, $scope.data).success(function (response) {
-                    $ionicPopup.alert({
-                        title: 'submit',
-                        template: JSON.stringify(response)
-                    });
+                    if ($scope.waitToScale)
+                        $scope.waitToScale = false;
                     if (response.success) {
                         $scope.data.score = $scope.phyIdx.score;
                         $scope.data.scoreRatio = response.data.scoreRatio;
                         $scope.calcScoreRank();
+
+                        StorageHelper.setObject('userData', $scope.data);
                     }
                 }).error(function () {
                     $ionicPopup.alert({
@@ -222,7 +218,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
         $scope.calcScoreRank = function () {
             //TEST
-            $scope.data.scoreRatio = 70.2;
+            //$scope.data.scoreRatio = 70.2;
             if ($scope.data.scoreRatio < 60) {
                 $scope.phyIdx.scoreRank = 0;
             } else if ($scope.data.scoreRatio < 80) {
@@ -260,7 +256,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         $ionicPlatform.ready($scope.init);
     })
 
-    .controller('bleListCtrl', function ($scope, $state, $ionicPlatform, $ionicLoading, $ionicPopup, $timeout, BleService, BleManager, Conf) {
+    .controller('bleListCtrl', function ($scope, $state, $ionicPlatform, $ionicLoading, $timeout, BleService, BleManager, Conf) {
         $scope.bleList = [];
         $scope.isBleSelected = function () {
             return $scope.selectedBle == undefined || $scope.selectedBle == null;
@@ -618,37 +614,85 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         }
     })
 
-    .controller('chartsCtrl', function ($scope, $ionicPopup, PhyIndexService) {
+    .controller('chartsCtrl', function ($scope, $ionicPopup, $ionicLoading, StorageHelper, PhyIndexService) {
         function _getMonthStartDate() {
             var date = new Date();
-            date.setDate(1);
-            return date;
+            return new Date(date.getFullYear(), date.getMonth(), 1);
         }
+
         function _getMonthEndDate() {
             var date = new Date();
-            return new Date(date.getFullYear, date.getMonth + 1, 1);
+            return new Date(date.getFullYear(), date.getMonth() + 1, 1);
         }
 
-        $scope.queryHistory = function (accountId, type, startDate, endDate) {
+        function _getQuarterStartDate() {
+            var date = new Date();
+            return new Date(date.getFullYear(), parseInt(date.getMonth() / 3) * 3, 1);
+        }
+
+        function _getQuarterEndDate() {
+            var date = _getQuarterStartDate();
+            date.setMonth(date.getMonth() + 3);
+            return date;
+        }
+
+        function _getYearStartDate() {
+            var date = new Date();
+            return new Date(date.getFullYear(), 1, 1);
+        }
+
+        function _getYearEndDate() {
+            var date = new Date();
+            return new Date(date.getFullYear() + 1, 1, 1);
+        }
+
+        $scope.queryHistory = function (accountId, startDate, endDate) {
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            PhyIndexService.queryHistory(accountId, startDate, endDate).success(function (response) {
+                $ionicPopup.alert({
+                    title: 'queryHistory',
+                    template: JSON.stringify(response)
+                });
+                $ionicLoading.hide();
+                if (response.success) {
+                    var list = response.data || [];
+                    for (var i = 0; i < list.length; i++) {
+                        var idx = list[i];
+
+                        $scope.chartLabels[i] = idx.submitTime;
+                        $scope.weight.chartData[0][i] = idx.weight || 0;
+                        $scope.bmi.chartData[0][i] = idx.bmi || 0;
+                        $scope.fatRatio.chartData[0][i] = idx.fatRatio || 0;
+                    }
+                }
+            }).error(function () {
+                $ionicLoading.hide();
+            })
+        };
+
+        $scope.changeType = function (type) {
 
         };
 
-        $scope.changeType = function(type) {
-
-        };
-
-        $scope.swipe = function($event) {
+        $scope.swipe = function ($event) {
 
         };
 
         $scope.$on('$ionicView.beforeEnter', function () {
             var defaultAccount = StorageHelper.getObject('userData');
             if (!$scope.accountId || $scope.accountId != defaultAccount.accountId) {
+                $scope.chartLabels = [];
+                $scope.weight = {chartData: [[]]};
+                $scope.bmi = {chartData: [[]]};
+                $scope.fatRatio = {chartData: [[]]};
+
                 $scope.accountId = defaultAccount.accountId;
-                //$scope.queryHistory($scope.accountId, )
-                var startDate = new Date();
-                startDate.setDate(1);
-                //var endDate =
+                $scope.startDate = _getMonthStartDate();
+                $scope.endDate = _getMonthEndDate();
+
+                $scope.queryHistory($scope.accountId, $scope.startDate, $scope.endDate);
             }
         });
     })
