@@ -387,6 +387,22 @@ services.service('StorageHelper', function ($window) {
                     }
                 });
             },
+            queryHistory: function (accountId, startDate, endDate) {
+                var parentAccountId = StorageHelper.get('parentAccountId');
+                var token = StorageHelper.get('token');
+                return $http({
+                    method: 'POST',
+                    url: EsConfig.API_URL + "phy/history?accountId=" + parentAccountId + "&token=" + token,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data:angular.toJson({
+                        accountId: accountId,
+                        startDate: startDate,
+                        endDate: endDate
+                    })
+                });
+            },
             submit: function (phyIdx, data) {
                 var parentAccountId = StorageHelper.get('parentAccountId');
                 var token = StorageHelper.get('token');

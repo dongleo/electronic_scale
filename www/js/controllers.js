@@ -618,22 +618,41 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         }
     })
 
-    .controller('chartsCtrl', function ($scope, $state) {
+    .controller('chartsCtrl', function ($scope, $ionicPopup, PhyIndexService) {
+        function _getMonthStartDate() {
+            var date = new Date();
+            date.setDate(1);
+            return date;
+        }
+        function _getMonthEndDate() {
+            var date = new Date();
+            return new Date(date.getFullYear, date.getMonth + 1, 1);
+        }
 
+        $scope.queryHistory = function (accountId, type, startDate, endDate) {
+
+        };
+
+        $scope.changeType = function(type) {
+
+        };
+
+        $scope.swipe = function($event) {
+
+        };
+
+        $scope.$on('$ionicView.beforeEnter', function () {
+            var defaultAccount = StorageHelper.getObject('userData');
+            if (!$scope.accountId || $scope.accountId != defaultAccount.accountId) {
+                $scope.accountId = defaultAccount.accountId;
+                //$scope.queryHistory($scope.accountId, )
+                var startDate = new Date();
+                startDate.setDate(1);
+                //var endDate =
+            }
+        });
     })
 
     .controller('aboutCtrl', function ($scope, $state, $http, $ionicPopup) {
-        $http({
-            method: 'GET',
-            url: 'http://app.slmbio.com/1.html'
-        }).success(function (response) {
-            $scope.html = $sce.trustAsHtml(response);
-        });
 
-        $scope.open = function () {
-            $ionicPopup.alert({
-                title: 'hehe',
-                template: 'Hello, World!'
-            });
-        }
     });
