@@ -617,17 +617,17 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
     .controller('chartsCtrl', function ($scope, $ionicPopup, $ionicLoading, StorageHelper, PhyIndexService) {
         function _getMonthStartDate() {
             var date = new Date();
-            return new Date(date.getFullYear(), date.getMonth(), 1);
+            return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
         }
 
         function _getMonthEndDate() {
             var date = new Date();
-            return new Date(date.getFullYear(), date.getMonth() + 1, 1);
+            return new Date(date.getFullYear(), date.getMonth() + 1, 1, 0, 0, 0);
         }
 
         function _getQuarterStartDate() {
             var date = new Date();
-            return new Date(date.getFullYear(), parseInt(date.getMonth() / 3) * 3, 1);
+            return new Date(date.getFullYear(), parseInt(date.getMonth() / 3) * 3, 1, 0, 0, 0);
         }
 
         function _getQuarterEndDate() {
@@ -638,23 +638,19 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
         function _getYearStartDate() {
             var date = new Date();
-            return new Date(date.getFullYear(), 1, 1);
+            return new Date(date.getFullYear(), 1, 1, 0, 0, 0);
         }
 
         function _getYearEndDate() {
             var date = new Date();
-            return new Date(date.getFullYear() + 1, 1, 1);
+            return new Date(date.getFullYear() + 1, 1, 1, 0, 0, 0);
         }
 
-        $scope.queryHistory = function (accountId, startDate, endDate) {
+        $scope.queryHistory = function () {
             $ionicLoading.show({
                 template: 'Loading...'
             });
-            PhyIndexService.queryHistory(accountId, startDate, endDate).success(function (response) {
-                $ionicPopup.alert({
-                    title: 'queryHistory',
-                    template: JSON.stringify(response)
-                });
+            PhyIndexService.queryHistory($scope.accountId, $scope.startDate, $scope.endDate, $scope.mode).success(function (response) {
                 $ionicLoading.hide();
                 if (response.success) {
                     var list = response.data || [];
@@ -673,11 +669,37 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
 
         $scope.changeType = function (type) {
+            if ($scope.type != type) {
+                $scope.classes = {};
+                $scope.classes[type] = 'self_activated';
+                $scope.type = type;
 
+                if ($scope.type == 'month') {
+                    $scope.mode = 'DAY';
+
+                    $scope.startDate = _getMonthStartDate();
+                    $scope.endDate = _getMonthEndDate();
+                } else if ($scope.type == 'quarter') {
+                    $scope.mode = 'MONTH';
+
+                    $scope.startDate = _getQuarterStartDate();
+                    $scope.endDate = _getQuarterEndDate();
+                } else if ($scope.type == 'year') {
+                    $scope.mode = 'MONTH';
+
+                    $scope.startDate = _getYearStartDate();
+                    $scope.endDate = _getYearEndDate();
+                }
+
+                $scope.queryHistory();
+            }
         };
 
         $scope.swipe = function ($event) {
-
+            /*$ionicPopup.alert({
+                title: 'swipe',
+                template: JSON.stringify($event)
+            });*/
         };
 
         $scope.$on('$ionicView.beforeEnter', function () {
@@ -688,11 +710,15 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 $scope.bmi = {chartData: [[]]};
                 $scope.fatRatio = {chartData: [[]]};
 
+                $scope.classes = {'month': 'self_activated'};
+                $scope.type = 'month';
+                $scope.mode = 'DAY';
+
                 $scope.accountId = defaultAccount.accountId;
                 $scope.startDate = _getMonthStartDate();
                 $scope.endDate = _getMonthEndDate();
 
-                $scope.queryHistory($scope.accountId, $scope.startDate, $scope.endDate);
+                $scope.queryHistory();
             }
         });
     })

@@ -387,7 +387,7 @@ services.service('StorageHelper', function ($window) {
                     }
                 });
             },
-            queryHistory: function (accountId, startDate, endDate) {
+            queryHistory: function (accountId, startDate, endDate, mode) {
                 var parentAccountId = StorageHelper.get('parentAccountId');
                 var token = StorageHelper.get('token');
                 return $http({
@@ -399,7 +399,8 @@ services.service('StorageHelper', function ($window) {
                     data:angular.toJson({
                         accountId: accountId,
                         startDate: startDate,
-                        endDate: endDate
+                        endDate: endDate,
+                        mode: mode
                     })
                 });
             },

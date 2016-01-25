@@ -7,16 +7,13 @@
             <button class="button button-icon icon ion-android-add" ng-click="addNewAccount()"></button>
         </ion-nav-buttons>-->
     </ion-nav-bar>
-    <ion-content padding="false" class="has-header" ng-swipe-left="swipe($event)" ng-swipe-right="swipe($event)">
+    <ion-content padding="false" class="has-header">
         <div class="button-bar">
-            <a class="button button-block button-small" ng-class="{activated: type == 'month'}"
-               ng-click="changeType('month')">月</a>
-            <a class="button button-block button-small" ng-class="{activated: type == 'quarter'}"
-               ng-click="changeType('quarter')">季度</a>
-            <a class="button button-block button-small" ng-class="{activated: type == 'year'}"
-               ng-click="changeType('year')">年</a>
+            <a class="button button-block button-small {{classes.month}}" ng-click="changeType('month')">月</a>
+            <a class="button button-block button-small {{classes.quarter}}" ng-click="changeType('quarter')">季度</a>
+            <a class="button button-block button-small {{classes.year}}" ng-click="changeType('year')">年</a>
         </div>
-        <ion-list>
+        <ion-list ng-swipe-left="swipe($event)" ng-swipe-right="swipe($event)">
             <div class="item item-divider">
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;体重(KG)
             </div>
