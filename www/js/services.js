@@ -1,7 +1,8 @@
 var services = angular.module('app.services', []);
 
 services.value('EsConfig', {
-    'API_URL': 'http://app.slmbio.com:8080/es_web/'
+    //'API_URL': 'http://app.slmbio.com:8080/es_web/'
+    'API_URL': 'http://appadmin.slmbio.com:8080/es_web/'
 });
 
 services.service('StorageHelper', function ($window) {
