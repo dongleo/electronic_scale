@@ -638,12 +638,12 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
         function _getYearStartDate() {
             var date = new Date();
-            return new Date(date.getFullYear(), 1, 1, 0, 0, 0);
+            return new Date(date.getFullYear(), 0, 1, 0, 0, 0);
         }
 
         function _getYearEndDate() {
             var date = new Date();
-            return new Date(date.getFullYear() + 1, 1, 1, 0, 0, 0);
+            return new Date(date.getFullYear() + 1, 0, 1, 0, 0, 0);
         }
 
         $scope.queryHistory = function () {
@@ -653,14 +653,21 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             PhyIndexService.queryHistory($scope.accountId, $scope.startDate, $scope.endDate, $scope.mode).success(function (response) {
                 $ionicLoading.hide();
                 if (response.success) {
+                    $scope.chartLabels = [];
+                    $scope.weight = {chartData: [[]]};
+                    $scope.bmi = {chartData: [[]]};
+                    $scope.fatRatio = {chartData: [[]]};
+
                     var list = response.data || [];
                     for (var i = 0; i < list.length; i++) {
                         var idx = list[i];
 
-                        $scope.chartLabels[i] = idx.submitTime;
-                        $scope.weight.chartData[0][i] = idx.weight || 0;
-                        $scope.bmi.chartData[0][i] = idx.bmi || 0;
-                        $scope.fatRatio.chartData[0][i] = idx.fatRatio || 0;
+                        if (idx.submitTime) {
+                            $scope.chartLabels[i] = idx.submitTime;
+                            $scope.weight.chartData[0][i] = idx.weight || 0;
+                            $scope.bmi.chartData[0][i] = idx.bmi || 0;
+                            $scope.fatRatio.chartData[0][i] = idx.fatRatio || 0;
+                        }
                     }
                 }
             }).error(function () {
@@ -697,9 +704,9 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
         $scope.swipe = function ($event) {
             /*$ionicPopup.alert({
-                title: 'swipe',
-                template: JSON.stringify($event)
-            });*/
+             title: 'swipe',
+             template: JSON.stringify($event)
+             });*/
         };
 
         $scope.$on('$ionicView.beforeEnter', function () {

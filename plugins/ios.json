@@ -54,13 +54,13 @@
         "cordova-plugin-splashscreen": {
             "PACKAGE_NAME": "com.xyscolor.electronicscale"
         },
-        "ionic-plugin-keyboard": {
-            "PACKAGE_NAME": "com.xyscolor.electronicscale"
-        },
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "com.xyscolor.electronicscale"
         },
         "es-plugin-ble": {
+            "PACKAGE_NAME": "com.xyscolor.electronicscale"
+        },
+        "ionic-plugin-keyboard": {
             "PACKAGE_NAME": "com.xyscolor.electronicscale"
         }
     },
