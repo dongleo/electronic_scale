@@ -16,7 +16,7 @@
                 <div style="position:relative;display:inline-block;width:30%;height:100px;"></div>
                 <img src="img/cloud.png" style="width:40%;"/>
             </div>
-            <div class="phy_score phy_score{{phyIdx.scoreRank || '0'}}">
+            <div class="phy_score phy_score{{phyIdx.scoreRank || '0'}}" ng-click="goToDetail()">
                 <strong>
                     {{data.score || '--'}}分
                 </strong>
@@ -62,7 +62,7 @@
                 请站上秤开始我们的健康之旅吧！
             </div>
         </div>
-        <div ng-if="phyIdx.scoreRank == 0">
+        <div ng-if="phyIdx.scoreRank == 1">
             <div class="msg_title">
                 诗琳美提醒您！
             </div>
@@ -70,7 +70,7 @@
                 您只击败了<span class="msg_rate">{{data.scoreRatio}}%</span>的用户，<br/>需要努力了！
             </div>
         </div>
-        <div ng-if="phyIdx.scoreRank == 1">
+        <div ng-if="phyIdx.scoreRank == 2">
             <div class="msg_title">
                 诗琳美恭喜您！
             </div>
@@ -78,7 +78,7 @@
                 您成功击败了<span class="msg_rate">{{data.scoreRatio}}%</span>的用户，<br/>太强悍了！
             </div>
         </div>
-        <div ng-if="phyIdx.scoreRank == 2">
+        <div ng-if="phyIdx.scoreRank == 3">
             <div class="msg_title">
                 诗琳美恭喜您！
             </div>

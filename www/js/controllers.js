@@ -10,6 +10,9 @@ controllers.value('Conf', {
 });
 
 controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ionicLoading, StorageHelper, AccountService, PhyIndexService) {
+    function calAge(birthStr) {
+        return new Date().getFullYear() - new Date(birthStr).getFullYear();
+    }
     if (StorageHelper.get('hasLogin')) {
         $state.go("tab.check");
         return;
@@ -37,19 +40,13 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                         userData.firstLogin = true;
                     }
                     var phyIdx = response.data.phyIdx;
-                    // TEST
-                    /*var phyIdx = {
-                     accountId: response.data.accountId,
-                     weight: 65.2,
-                     bmi: 23.3,
-                     fatRatio: 15.5
-                     };
-                     userData.score = 90.1;
-                     userData.scoreRatio = 80.5;*/
 
                     if (phyIdx && phyIdx.accountId) {
+                        userData.age = calAge(userData.birth);
+                        phyIdx = PhyIndexService.calcPhyIdx(phyIdx, userData);
                         PhyIndexService.set(phyIdx.accountId, phyIdx);
                         userData.phyIdx = undefined;
+                        userData.scoreRatio = phyIdx.scoreRatio;
                     }
                     StorageHelper.set('hasLogin', true);
                     StorageHelper.set('token', userData.token);
@@ -139,6 +136,9 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         $scope.addBle = function () {
             $state.go('tab.blelist');
         };
+        $scope.goToDetail = function () {
+            $state.go('phyDetail');
+        };
         $scope.init = function () {
             $scope.bleList = BleManager.getBleList();
             $scope.selectedBle = BleManager.selectedBle;
@@ -180,16 +180,17 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 $scope.phyIdx.fatRatio = PhyIndexService.calcFatRatio($scope.phyIdx, $scope.data);
 
                 $scope.phyIdx = PhyIndexService.calcPhyIdx($scope.phyIdx, $scope.data);
-                PhyIndexService.set($scope.phyIdx.accountId, $scope.phyIdx);
+                PhyIndexService.set($scope.data.accountId, $scope.phyIdx);
 
                 //StorageHelper.setObject('userData', $scope.data);
+                $scope.data.score = $scope.phyIdx.score;
+                $scope.data.scoreRatio = $scope.phyIdx.scoreRatio;
 
                 PhyIndexService.submit($scope.phyIdx, $scope.data).success(function (response) {
                     if ($scope.waitToScale)
                         $scope.waitToScale = false;
                     if (response.success) {
-                        $scope.data.score = $scope.phyIdx.score;
-                        $scope.data.scoreRatio = response.data.scoreRatio;
+                        //$scope.data.scoreRatio = response.data.scoreRatio;
                         $scope.calcScoreRank();
 
                         StorageHelper.setObject('userData', $scope.data);
@@ -208,23 +209,17 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
             if ($scope.phyIdx.score != $scope.data.score) {
                 $scope.data.score = $scope.phyIdx.score;
-
-                //TODO 查询新的排名
-                $scope.calcScoreRank();
-            } else {
-                $scope.calcScoreRank();
             }
+            $scope.calcScoreRank();
         };
 
         $scope.calcScoreRank = function () {
-            //TEST
-            //$scope.data.scoreRatio = 70.2;
-            if ($scope.data.scoreRatio < 60) {
-                $scope.phyIdx.scoreRank = 0;
-            } else if ($scope.data.scoreRatio < 80) {
+            if ($scope.data.score < 60) {
                 $scope.phyIdx.scoreRank = 1;
-            } else {
+            } else if ($scope.data.score < 80) {
                 $scope.phyIdx.scoreRank = 2;
+            } else {
+                $scope.phyIdx.scoreRank = 3;
             }
         };
 
@@ -310,15 +305,15 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         $scope.waistlineDic = Conf.hipAndWaistlineDic;
         $scope.hiplineDic = Conf.hipAndWaistlineDic;
         $scope.$on('$ionicView.beforeEnter', function () {
-            if (StorageHelper.containKey('userData')) {
+            $scope.data = StorageHelper.getObject('userData');
+            if ($scope.data.birth) {
                 $scope.data = StorageHelper.getObject('userData');
-                $scope.tel = parseInt($scope.data.tel);
                 $scope.data.birth = new Date($scope.data.birth);
             } else {
-                $scope.data.height = 175;
+                $scope.data.height = 170;
                 $scope.data.waistline = 80;
                 $scope.data.hipline = 90;
-                $scope.data.birth = new Date('1990-09-03');
+                $scope.data.birth = new Date('1985-09-03');
             }
         });
         $scope.cancel = function () {
@@ -509,10 +504,12 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         } else {
             $scope.title = '添加账号信息';
             $scope.data = {};
-            $scope.data.height = 175;
+        }
+        if (!$scope.data.height) {
+            $scope.data.height = 170;
             $scope.data.waistline = 80;
             $scope.data.hipline = 90;
-            $scope.data.birth = new Date('1990-09-03');
+            $scope.data.birth = new Date('1985-09-03');
         }
         $scope.cancel = function () {
             $ionicHistory.goBack();
@@ -664,13 +661,20 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
                         if (idx.submitTime) {
                             $scope.chartLabels[i] = idx.submitTime;
-                            $scope.weight.chartData[0][i] = idx.weight || 0;
-                            $scope.bmi.chartData[0][i] = idx.bmi || 0;
-                            $scope.fatRatio.chartData[0][i] = idx.fatRatio || 0;
+                            /*$scope.weight.chartData[0][i] = idx.weight.toFixed(1) || 0;
+                            $scope.bmi.chartData[0][i] = idx.bmi.toFixed(1) || 0;
+                            $scope.fatRatio.chartData[0][i] = idx.fatRatio.toFixed(1) || 0;*/
+                            $scope.weight.chartData[0][i] = idx.weight ? idx.weight.toFixed(1) : 0;
+                            $scope.bmi.chartData[0][i] = idx.bmi ? idx.bmi.toFixed(1) : 0;
+                            $scope.fatRatio.chartData[0][i] = idx.fatRatio ? idx.fatRatio.toFixed(1) : 0;
                         }
                     }
                 }
-            }).error(function () {
+            }).error(function (error) {
+                $ionicPopup.alert({
+                    title: 'error',
+                    template: JSON.stringify(error)
+                });
                 $ionicLoading.hide();
             })
         };
@@ -732,4 +736,46 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
 
     .controller('aboutCtrl', function ($scope, $state, $http, $ionicPopup) {
 
+    })
+
+    .controller('phyDetailCtrl', function ($scope, $ionicHistory, StorageHelper, PhyIndexService) {
+        $scope.back = function () {
+            $ionicHistory.goBack();
+        };
+        $scope.$on('$ionicView.beforeEnter', function () {
+            $scope.data = StorageHelper.getObject('userData');
+            $scope.phyIdx = PhyIndexService.get($scope.data.accountId);
+
+            $scope.yesCount = 0;
+            $scope.noCount = 0;
+            if ($scope.phyIdx.weightRank == 0) {
+                $scope.yesCount += 1;
+            }
+            if ($scope.phyIdx.bmiRank == 0) {
+                $scope.yesCount += 1;
+            }
+            if ($scope.phyIdx.fatRatioRank == 0) {
+                $scope.yesCount += 1;
+            }
+            if ($scope.phyIdx.bmrRank == 0) {
+                $scope.yesCount += 1;
+            }
+            if ($scope.phyIdx.waterRank == 0) {
+                $scope.yesCount += 1;
+            }
+            if ($scope.phyIdx.smrRank == 0) {
+                $scope.yesCount += 1;
+            }
+            if ($scope.phyIdx.bodyAgeRank == 0) {
+                $scope.yesCount += 1;
+            }
+            if ($scope.phyIdx.boneWeightRank == 0) {
+                $scope.yesCount += 1;
+            }
+            if ($scope.phyIdx.whrRank == 0) {
+                $scope.yesCount += 1;
+            }
+
+            $scope.noCount = 9 - $scope.yesCount;
+        });
     });

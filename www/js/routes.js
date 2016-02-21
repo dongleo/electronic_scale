@@ -74,6 +74,11 @@ angular.module('app.routes', [])
                 url: '/account/edit/:accountId',
                 templateUrl: 'templates/account-edit.html',
                 controller: 'accountEditCtrl'
+            })
+            .state('phyDetail', {
+                url: '/phyDetail',
+                templateUrl: 'templates/phy-detail.html',
+                controller: 'phyDetailCtrl'
             });
 
         // if none of the above states are matched, use this as the fallback
