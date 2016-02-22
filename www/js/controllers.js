@@ -744,7 +744,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
         $scope.$on('$ionicView.beforeEnter', function () {
             $scope.data = StorageHelper.getObject('userData');
-            $scope.phyIdx = PhyIndexService.get($scope.data.accountId);
+            $scope.phyIdx = PhyIndexService.get($scope.data.accountId) || {};
 
             $scope.yesCount = 0;
             $scope.noCount = 0;

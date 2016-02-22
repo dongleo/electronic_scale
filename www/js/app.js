@@ -47,46 +47,55 @@ angular.module('app',
         }
     }).filter('weightfilter', function () {
         return function (weightRank) {
-            var dic = ['偏瘦', '标准', '超重', '轻度肥胖', '中度肥胖', '重度肥胖'];
+            weightRank = weightRank || -1;
+            var dic = ['偏瘦', '达标', '超重', '轻度肥胖', '中度肥胖', '重度肥胖'];
             return dic[weightRank + 1];
         }
     }).filter('bmifilter', function () {
         return function (bmiRank) {
-            var dic = ['偏低', '标准', '偏高'];
+            bmiRank = bmiRank || -1;
+            var dic = ['偏低', '达标', '偏高'];
             return dic[bmiRank + 1];
         }
     }).filter('fatfilter', function () {
         return function (fatRank) {
-            var dic = ['偏低', '标准', '偏高', '严重超标'];
+            fatRank = fatRank || -1;
+            var dic = ['偏低', '达标', '偏高', '严重超标'];
             return dic[fatRank + 1];
         }
     }).filter('bmrfilter', function () {
         return function (bmrRank) {
+            bmrRank = bmrRank || -1;
             var dic = ['不达标', '达标'];
             return dic[bmrRank + 1];
         }
     }).filter('waterfilter', function () {
         return function (waterRank) {
-            var dic = ['偏低', '标准', '偏高'];
+            waterRank = waterRank || -1;
+            var dic = ['偏低', '达标', '偏高'];
             return dic[waterRank + 1];
         }
     }).filter('smrfilter', function () {
         return function (smrRank) {
-            var dic = ['偏低', '标准', '偏高'];
+            smrRank = smrRank || -1;
+            var dic = ['偏低', '达标', '偏高'];
             return dic[smrRank + 1];
         }
     }).filter('bodyagefilter', function () {
         return function (bodyAgeRank) {
-            var dic = ['不达标', '标准'];
+            bodyAgeRank = bodyAgeRank || 1;
+            var dic = ['达标', '不达标'];
             return dic[bodyAgeRank];
         }
     }).filter('boneweightfilter', function () {
         return function (boneWeightRank) {
-            var dic = ['偏低', '标准', '偏高'];
+            boneWeightRank = boneWeightRank || -1;
+            var dic = ['偏低', '达标', '偏高'];
             return dic[boneWeightRank + 1];
         }
     }).filter('whrfilter', function () {
         return function (whrRank) {
+            whrRank = whrRank || 1;
             var dic = ['达标', '不达标'];
             return dic[whrRank];
         }

@@ -7,7 +7,7 @@
     <ion-content padding="false" class="has-header">
         <div style="">
             <div style="height:70px;width:100%;margin-top:2em;margin-left:3em">
-                <span style="font-size:2.4em;">{{phyIdx.score}}分</span>
+                <span style="font-size:2.4em;">{{phyIdx.score || '--'}}分</span>
                 <br/>
                 <span style="font-size:1.2em;line-height:2em">您的身体状况良好</span>
             </div>
@@ -19,7 +19,7 @@
                  style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
                 <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/tizhong.png"/></div>
                 <div style="float:left;width:35%;margin-top:2px">体重</div>
-                <div style="float:left;width:30%">{{phyIdx.weight}}kg</div>
+                <div style="float:left;width:30%">{{phyIdx.weight || '--'}}kg</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.weightRank | weightfilter}}</span>
                 </div>
             </div>
@@ -28,7 +28,7 @@
                  style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
                 <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/BMI.png"/></div>
                 <div style="float:left;width:35%;margin-top:2px">BMI</div>
-                <div style="float:left;width:30%">{{phyIdx.bmi}}</div>
+                <div style="float:left;width:30%">{{phyIdx.bmi || '--'}}</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.bmiRank | bmifilter}}</span></div>
             </div>
             <div style="clear:both;height:0px"></div>
@@ -37,7 +37,7 @@
                 <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/zhifanglv.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">脂肪率</div>
-                <div style="float:left;width:30%">{{phyIdx.fatRatio}}%</div>
+                <div style="float:left;width:30%">{{phyIdx.fatRatio || '--'}}%</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.fatRatioRank | fatfilter}}</span>
                 </div>
             </div>
@@ -47,7 +47,7 @@
                 <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px"
                                                                         src="img/jichudaixiangliang.png"/></div>
                 <div style="float:left;width:35%;margin-top:2px">基础代谢量</div>
-                <div style="float:left;width:30%">{{phyIdx.bmr}}kcal</div>
+                <div style="float:left;width:30%">{{phyIdx.bmr || '--'}}kcal</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.bmrRank | bmrfilter}}</span></div>
             </div>
             <div style="clear:both;height:0px"></div>
@@ -56,7 +56,7 @@
                 <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/tishuifen.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">体水分</div>
-                <div style="float:left;width:30%">{{phyIdx.water}}%</div>
+                <div style="float:left;width:30%">{{phyIdx.water || '--'}}%</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.waterRank| waterfilter}}</span>
                 </div>
             </div>
@@ -66,7 +66,7 @@
                 <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/gugejilv.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">骨骼肌率</div>
-                <div style="float:left;width:30%">{{phyIdx.smr}}%</div>
+                <div style="float:left;width:30%">{{phyIdx.smr || '--'}}%</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.smrRank | smrfilter}}</span></div>
             </div>
             <div style="clear:both;height:0px"></div>
@@ -75,7 +75,7 @@
                 <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/tinianling.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">体年龄</div>
-                <div style="float:left;width:30%">{{phyIdx.bodyAge}}岁</div>
+                <div style="float:left;width:30%">{{phyIdx.bodyAge || '--'}}岁</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.bodyAgeRank | bodyagefilter}}</span>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                  style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
                 <div style="width:10%;float:left;margin-top:0.5em"><img style="width:30px" src="img/guliang.png"/></div>
                 <div style="float:left;width:35%;margin-top:2px">骨量</div>
-                <div style="float:left;width:30%">{{phyIdx.boneWeight}}kg</div>
+                <div style="float:left;width:30%">{{phyIdx.boneWeight || '--'}}kg</div>
                 <div style="float:left;width:20%;"><span
                         style="color:red">{{phyIdx.boneWeightRank | boneweightfilter}}</span></div>
             </div>
@@ -94,7 +94,7 @@
                 <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/yaotunbi.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">腰臀比</div>
-                <div style="float:left;width:30%">{{phyIdx.whr}}</div>
+                <div style="float:left;width:30%">{{phyIdx.whr || '--'}}</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.whrRank | whrfilter}}</span></div>
             </div>
             <div style="clear:both;height:0px"></div>
@@ -106,7 +106,7 @@
                 <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/tizhong.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">体重</div>
-                <div style="float:left;width:30%">{{phyIdx.weight}}kg</div>
+                <div style="float:left;width:30%">{{phyIdx.weight || '--'}}kg</div>
                 <div style="float:left;width:20%;"><span
                         style="color:green">{{phyIdx.weightRank | weightfilter}}</span></div>
             </div>
@@ -115,7 +115,7 @@
                  style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
                 <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/BMI.png"/></div>
                 <div style="float:left;width:35%;margin-top:2px">BMI</div>
-                <div style="float:left;width:30%">{{phyIdx.bmi}}</div>
+                <div style="float:left;width:30%">{{phyIdx.bmi || '--'}}</div>
                 <div style="float:left;width:20%;"><span style="color:green">{{phyIdx.bmiRank | bmifilter}}</span>
                 </div>
             </div>
@@ -125,7 +125,7 @@
                 <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/zhifanglv.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">脂肪率</div>
-                <div style="float:left;width:30%">{{phyIdx.fatRatio}}%</div>
+                <div style="float:left;width:30%">{{phyIdx.fatRatio || '--'}}%</div>
                 <div style="float:left;width:20%;"><span
                         style="color:green">{{phyIdx.fatRatioRank | fatfilter}}</span></div>
             </div>
@@ -135,7 +135,7 @@
                 <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px"
                                                                         src="img/jichudaixiangliang.png"/></div>
                 <div style="float:left;width:35%;margin-top:2px">基础代谢量</div>
-                <div style="float:left;width:30%">{{phyIdx.bmr}}kcal</div>
+                <div style="float:left;width:30%">{{phyIdx.bmr || '--'}}kcal</div>
                 <div style="float:left;width:20%;"><span style="color:green">{{phyIdx.bmrRank | bmrfilter}}</span>
                 </div>
             </div>
@@ -145,7 +145,7 @@
                 <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/tishuifen.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">体水分</div>
-                <div style="float:left;width:30%">{{phyIdx.water}}%</div>
+                <div style="float:left;width:30%">{{phyIdx.water || '--'}}%</div>
                 <div style="float:left;width:20%;"><span style="color:green">{{phyIdx.waterRank| waterfilter}}</span>
                 </div>
             </div>
@@ -155,7 +155,7 @@
                 <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/gugejilv.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">骨骼肌率</div>
-                <div style="float:left;width:30%">{{phyIdx.smr}}%</div>
+                <div style="float:left;width:30%">{{phyIdx.smr || '--'}}%</div>
                 <div style="float:left;width:20%;"><span style="color:green">{{phyIdx.smrRank | smrfilter}}</span>
                 </div>
             </div>
@@ -166,7 +166,7 @@
                                                                         src="img/tinianling.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">体年龄</div>
-                <div style="float:left;width:30%">{{phyIdx.bodyAge}}岁</div>
+                <div style="float:left;width:30%">{{phyIdx.bodyAge || '--'}}岁</div>
                 <div style="float:left;width:20%;"><span
                         style="color:green">{{phyIdx.bodyAgeRank | bodyagefilter}}</span></div>
             </div>
@@ -176,7 +176,7 @@
                 <div style="width:10%;float:left;margin-top:0.5em"><img style="width:30px" src="img/guliang.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">骨量</div>
-                <div style="float:left;width:30%">{{phyIdx.boneWeight}}kg</div>
+                <div style="float:left;width:30%">{{phyIdx.boneWeight || '--'}}kg</div>
                 <div style="float:left;width:20%;"><span
                         style="color:green">{{phyIdx.boneWeightRank | boneweightfilter}}</span>
                 </div>
@@ -187,7 +187,7 @@
                 <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/yaotunbi.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">腰臀比</div>
-                <div style="float:left;width:30%">{{phyIdx.whr}}</div>
+                <div style="float:left;width:30%">{{phyIdx.whr || '--'}}</div>
                 <div style="float:left;width:20%;"><span style="color:green">{{phyIdx.whrRank | whrfilter}}</span>
                 </div>
             </div>
