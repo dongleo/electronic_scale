@@ -195,11 +195,11 @@ services.service('StorageHelper', function ($window) {
 
                 function _get_standard_weight() {
                     if (userData.height < 165) {
-                        return phyIdx.weight - 100;
+                        return userData.height - 100;
                     } else if (userData.height >= 166 && userData.height < 175) {
-                        return phyIdx.weight - 105;
+                        return userData.height - 105;
                     } else {
-                        return phyIdx.weight - 110;
+                        return userData.height - 110;
                     }
                 }
 

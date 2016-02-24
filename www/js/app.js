@@ -47,55 +47,73 @@ angular.module('app',
         }
     }).filter('weightfilter', function () {
         return function (weightRank) {
-            weightRank = weightRank || -1;
+            if (!weightRank && weightRank != 0) {
+                weightRank = -1;
+            }
             var dic = ['偏瘦', '达标', '超重', '轻度肥胖', '中度肥胖', '重度肥胖'];
             return dic[weightRank + 1];
         }
     }).filter('bmifilter', function () {
         return function (bmiRank) {
-            bmiRank = bmiRank || -1;
+            if (!bmiRank && bmiRank != 0) {
+                bmiRank = -1;
+            }
             var dic = ['偏低', '达标', '偏高'];
             return dic[bmiRank + 1];
         }
     }).filter('fatfilter', function () {
         return function (fatRank) {
-            fatRank = fatRank || -1;
+            if (!fatRank && fatRank != 0) {
+                fatRank = -1;
+            }
             var dic = ['偏低', '达标', '偏高', '严重超标'];
             return dic[fatRank + 1];
         }
     }).filter('bmrfilter', function () {
         return function (bmrRank) {
-            bmrRank = bmrRank || -1;
+            if (!bmrRank && bmrRank != 0) {
+                bmrRank = -1;
+            }
             var dic = ['不达标', '达标'];
             return dic[bmrRank + 1];
         }
     }).filter('waterfilter', function () {
         return function (waterRank) {
-            waterRank = waterRank || -1;
+            if (!waterRank && waterRank != 0) {
+                waterRank = -1;
+            }
             var dic = ['偏低', '达标', '偏高'];
             return dic[waterRank + 1];
         }
     }).filter('smrfilter', function () {
         return function (smrRank) {
-            smrRank = smrRank || -1;
+            if (!smrRank && smrRank != 0) {
+                smrRank = -1;
+            }
             var dic = ['偏低', '达标', '偏高'];
             return dic[smrRank + 1];
         }
     }).filter('bodyagefilter', function () {
         return function (bodyAgeRank) {
-            bodyAgeRank = bodyAgeRank || 1;
+            if (!bodyAgeRank && bodyAgeRank != 0) {
+                bodyAgeRank = 1;
+            }
             var dic = ['达标', '不达标'];
             return dic[bodyAgeRank];
         }
     }).filter('boneweightfilter', function () {
         return function (boneWeightRank) {
-            boneWeightRank = boneWeightRank || -1;
+            if (!boneWeightRank && boneWeightRank != 0) {
+                boneWeightRank = -1;
+            }
             var dic = ['偏低', '达标', '偏高'];
             return dic[boneWeightRank + 1];
         }
     }).filter('whrfilter', function () {
         return function (whrRank) {
-            whrRank = whrRank || 1;
+            if (!whrRank && whrRank != 0) {
+                whrRank = 1;
+            }
             var dic = ['达标', '不达标'];
             return dic[whrRank];
         }
