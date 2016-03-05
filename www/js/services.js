@@ -125,6 +125,9 @@ services.service('StorageHelper', function ($window) {
                     }
                 }
                 return null;
+            },
+            calAge: function (birthStr) {
+                return new Date().getFullYear() - new Date(birthStr).getFullYear();
             }
         };
     })
@@ -703,10 +706,10 @@ services.service('StorageHelper', function ($window) {
                         _bodyAge = userData.age + 10;
                     }
 
-                    if (userData.age <= _bodyAge) {
-                        _bodyAgeRank = 0;
-                    } else {
+                    if ((userData.age * 2 / 3) < _bodyAge) {
                         _bodyAgeRank = 1;
+                    } else {
+                        _bodyAgeRank = 0;
                     }
                 }
 

@@ -10,9 +10,6 @@ controllers.value('Conf', {
 });
 
 controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ionicLoading, StorageHelper, AccountService, PhyIndexService) {
-    function calAge(birthStr) {
-        return new Date().getFullYear() - new Date(birthStr).getFullYear();
-    }
     if (StorageHelper.get('hasLogin')) {
         $state.go("tab.check");
         return;
@@ -42,7 +39,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                     var phyIdx = response.data.phyIdx;
 
                     if (phyIdx && phyIdx.accountId) {
-                        userData.age = calAge(userData.birth);
+                        userData.age = AccountService.calAge(userData.birth);
                         phyIdx = PhyIndexService.calcPhyIdx(phyIdx, userData);
                         PhyIndexService.set(phyIdx.accountId, phyIdx);
                         userData.phyIdx = undefined;
@@ -125,11 +122,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
     })
 
-    .controller('checkCtrl', function ($scope, $ionicPlatform, $state, $ionicPopup, BleService, PhyIndexService, StorageHelper, BleManager, Conf) {
-        function calAge(birthStr) {
-            return new Date().getFullYear() - new Date(birthStr).getFullYear();
-        }
-
+    .controller('checkCtrl', function ($scope, $ionicPlatform, $state, $ionicPopup, BleService, AccountService, PhyIndexService, StorageHelper, BleManager, Conf) {
         $scope.goToEdit = function () {
             $state.go('edit');
         };
@@ -205,7 +198,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
 
         $scope.refreshPhy = function () {
-            $scope.phyIdx = PhyIndexService.calcPhyIdx($scope.phyIdx, $scope.data);
+            //$scope.phyIdx = PhyIndexService.calcPhyIdx($scope.phyIdx, $scope.data);
 
             if ($scope.phyIdx.score != $scope.data.score) {
                 $scope.data.score = $scope.phyIdx.score;
@@ -236,13 +229,14 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 $state.go('accountEdit', {accountId: $scope.data.accountId});
                 return;
             } else {
-                $scope.data.age = calAge($scope.data.birth);
+                $scope.data.age = AccountService.calAge($scope.data.birth);
             }
 
             var _phyIdx = PhyIndexService.get($scope.data.accountId);
             if (_phyIdx) {
                 $scope.phyIdx = _phyIdx;
                 $scope.refreshPhy();
+                $scope.waitToScale = false;
             } else {
                 $scope.phyIdx = {};
                 $scope.waitToScale = true;
@@ -300,7 +294,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         });
     })
 
-    .controller('editCtrl', function ($scope, $state, $ionicHistory, $ionicPopup, $ionicLoading, StorageHelper, Conf, AccountService) {
+    .controller('editCtrl', function ($scope, $state, $ionicHistory, $ionicPopup, $ionicLoading, StorageHelper, Conf, AccountService, PhyIndexService) {
         $scope.heightDic = Conf.heightDic;
         $scope.waistlineDic = Conf.hipAndWaistlineDic;
         $scope.hiplineDic = Conf.hipAndWaistlineDic;
@@ -363,6 +357,12 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             AccountService.edit($scope.data).success(function (data) {
                 if (data.success) {
                     StorageHelper.setObject('userData', $scope.data);
+                    var phyIdx = PhyIndexService.get($scope.data.accountId);
+                    if (phyIdx) {
+                        phyIdx = PhyIndexService.calcPhyIdx(phyIdx, $scope.data);
+
+                        PhyIndexService.set($scope.data.accountId, phyIdx);
+                    }
                     $ionicPopup.alert({
                         title: '提示',
                         template: '修改用户信息成功！'
@@ -407,6 +407,10 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             $state.go('accountEdit');
         };
         $scope.refresh = function () {
+            /*$scope.data.accountList = StorageHelper.getObject('accountList');
+            if ($scope.data.accountList.length) {
+                return;
+            }*/
             $ionicLoading.show({
                 template: 'Loading...'
             });
@@ -434,26 +438,49 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             $state.go('accountEdit', {accountId: account.accountId});
         };
         $scope.setDefault = function (account) {
-            StorageHelper.setObject('userData', account);
-            $scope.defaultAccount = StorageHelper.getObject('userData');
+            account.age = AccountService.calAge(account.birth);
             for (var i = 0; i < $scope.data.accountList.length; i++) {
-                if ($scope.data.accountList[i].accountId == $scope.defaultAccount.accountId) {
+                if ($scope.data.accountList[i].accountId == account.accountId) {
                     $scope.data.accountList[i].isDefault = true;
                 } else {
                     $scope.data.accountList[i].isDefault = false;
                 }
             }
-            if (!PhyIndexService.get(account.accountId)) {
+            var phyIdx = PhyIndexService.get(account.accountId);
+            if (!phyIdx) {
                 $ionicLoading.show({
                     template: 'Loading...'
                 });
                 PhyIndexService.query(account.accountId).success(function (response) {
                     $ionicLoading.hide();
+                    if (response && response.success) {
+                        if (response.data) {
+                            phyIdx = PhyIndexService.calcPhyIdx(response.data, account);
+                            account.scoreRatio = phyIdx.scoreRatio;
 
-                    PhyIndexService.set(account.accountId, response, data);
+                            PhyIndexService.set(phyIdx.accountId, phyIdx);
+                        }
+                        StorageHelper.setObject('userData', account);
+                        $scope.defaultAccount = account;
+
+                        $state.go('tab.check');
+                    }
                 }).error(function (error) {
                     $ionicLoading.hide();
+                    $ionicPopup.alert({
+                        title: '提示',
+                        template: JSON.stringify(error)
+                    });
                 });
+            } else {
+                phyIdx = PhyIndexService.calcPhyIdx(phyIdx, account);
+
+                PhyIndexService.set(phyIdx.accountId, phyIdx);
+                account.scoreRatio = phyIdx.scoreRatio;
+                StorageHelper.setObject('userData', account);
+                $scope.defaultAccount = account;
+
+                $state.go('tab.check');
             }
         };
         $scope.deleteAccount = function (account) {
@@ -465,7 +492,11 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                 });
                 return;
             }
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
             AccountService.deleteAccount(account).success(function (response) {
+                $ionicLoading.hide();
                 if (response.success) {
                     $ionicPopup.alert({
                         title: '提示',
@@ -475,6 +506,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                     if (account.accountId == $scope.defaultAccount.accountId) {
                         $scope.setDefault(AccountService.getAccount(parentAccountId));
                     }
+                    $scope.refresh();
                 } else {
                     $ionicPopup.alert({
                         title: '提示',
@@ -482,6 +514,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                     });
                 }
             }).error(function () {
+                $ionicLoading.hide();
                 $ionicPopup.alert({
                     title: '提示',
                     template: '网络不可用！'
