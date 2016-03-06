@@ -130,6 +130,13 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             $state.go('tab.blelist');
         };
         $scope.goToDetail = function () {
+            if ($scope.waitToScale) {
+                $ionicPopup.alert({
+                    title: '提示',
+                    template: '亲，测量之后才可以查看分析报告哦！'
+                });
+                return;
+            }
             $state.go('phyDetail');
         };
         $scope.init = function () {
@@ -408,9 +415,9 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
         $scope.refresh = function () {
             /*$scope.data.accountList = StorageHelper.getObject('accountList');
-            if ($scope.data.accountList.length) {
-                return;
-            }*/
+             if ($scope.data.accountList.length) {
+             return;
+             }*/
             $ionicLoading.show({
                 template: 'Loading...'
             });
@@ -695,8 +702,8 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                         if (idx.submitTime) {
                             $scope.chartLabels[i] = idx.submitTime;
                             /*$scope.weight.chartData[0][i] = idx.weight.toFixed(1) || 0;
-                            $scope.bmi.chartData[0][i] = idx.bmi.toFixed(1) || 0;
-                            $scope.fatRatio.chartData[0][i] = idx.fatRatio.toFixed(1) || 0;*/
+                             $scope.bmi.chartData[0][i] = idx.bmi.toFixed(1) || 0;
+                             $scope.fatRatio.chartData[0][i] = idx.fatRatio.toFixed(1) || 0;*/
                             $scope.weight.chartData[0][i] = idx.weight ? idx.weight.toFixed(1) : 0;
                             $scope.bmi.chartData[0][i] = idx.bmi ? idx.bmi.toFixed(1) : 0;
                             $scope.fatRatio.chartData[0][i] = idx.fatRatio ? idx.fatRatio.toFixed(1) : 0;
@@ -772,10 +779,42 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
     })
 
     .controller('phyDetailCtrl', function ($scope, $ionicHistory, StorageHelper, PhyIndexService) {
+        $scope.init = function() {
+            $scope.showDes = {
+                yesWeight: false,
+                yesBmi: false,
+                yesFatRatio: false,
+                yesBmr: false,
+                yesWater: false,
+                yesSmr: false,
+                yesBodyAge: false,
+                yesBoneWeight: false,
+                yesWhr: false,
+                yesNoFatWeight: false,
+                yesVfl: false,
+                noWeight: false,
+                noBmi: false,
+                noFatRatio: false,
+                noBmr: false,
+                noWater: false,
+                noSmr: false,
+                noBodyAge: false,
+                noBoneWeight: false,
+                noWhr: false,
+                noNoFatWeight: false,
+                noVfl: false
+            };
+        };
         $scope.back = function () {
             $ionicHistory.goBack();
         };
+        $scope.toggleDes = function (key) {
+            var isShow = $scope.showDes[key];
+            $scope.init();
+            $scope.showDes[key] = !isShow;
+        };
         $scope.$on('$ionicView.beforeEnter', function () {
+            $scope.init();
             $scope.data = StorageHelper.getObject('userData');
             $scope.phyIdx = PhyIndexService.get($scope.data.accountId) || {};
 

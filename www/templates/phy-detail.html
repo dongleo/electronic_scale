@@ -12,184 +12,527 @@
                 <span style="font-size:1.2em;line-height:2em">您成功击败了<span class="msg_rate">{{phyIdx.scoreRatio || '--'}}%</span>的用户！</span>
             </div>
 
-            <div style="background-color:gray;width:100%;height:40px;line-height:2.9em;padding-left:1em;color:red">
+            <div style="background-color:gray;width:100%;height:40px;line-height:2.9em;padding-left:0.7em;">
+                高级指标共1项
+            </div>
+            <div style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('noNoFatWeight')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/tizhong.png"/></div>
+                <div style="float:left;width:60%;margin-top:2px">去脂体重</div>
+                <div style="float:left;width:25%">{{phyIdx.noFatWeight || '--'}}kg</div>
+                <div style="float:left;width:5%;">{{showDes.noNoFatWeight | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.noNoFatWeight" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">去脂体重＝体重*（1-体脂率）</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div style="background-color:gray;width:100%;height:40px;line-height:2.9em;padding-left:0.7em;color:red">
                 本次测试未达标项目共{{noCount}}项
             </div>
             <div ng-show="phyIdx.weightRank != 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/tizhong.png"/></div>
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('noWeight')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/tizhong.png"/></div>
                 <div style="float:left;width:35%;margin-top:2px">体重</div>
                 <div style="float:left;width:30%">{{phyIdx.weight || '--'}}kg</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.weightRank | weightfilter}}</span>
                 </div>
+                <div style="float:left;width:5%;">{{showDes.noWeight | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.noWeight" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:300px;margin:0 auto;">
+                    <div style="float:left;width:50px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.weight1}}kg</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">{{phyIdx.weight2}}kg</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">{{phyIdx.weight3}}kg</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">{{phyIdx.weight4}}kg</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">{{phyIdx.weight5}}kg</div>
+                </div>
+                <div align="center" style="margin-top:0;"><img width="300px" src="img/bz/ct6.png"/></div>
+                <div style="width:300px;margin:0 auto;">
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">偏瘦</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">标准</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">超重</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">轻度肥胖</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">中度肥胖</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">重度肥胖</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">恭喜您拥有理想的体重，保持合理健康的生活方式，适量参与运动，您就可以维持标准体重了</div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.bmiRank != 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/BMI.png"/></div>
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('noBmi')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/BMI.png"/></div>
                 <div style="float:left;width:35%;margin-top:2px">BMI</div>
                 <div style="float:left;width:30%">{{phyIdx.bmi || '--'}}</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.bmiRank | bmifilter}}</span></div>
+                <div style="float:left;width:5%;">{{showDes.noBmi | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.noBmi" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.bmi1}}</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">{{phyIdx.bmi2}}</div>
+                </div>
+                <div align="center" style="margin-top:0;"><img style="width:180px;" src="img/bz/ct3_z.png"/></div>
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏低</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">标准</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏高</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">
+                    <p>BMI不达标，要加强锻炼了呢</p>
+                    <p>BMI：指身体质量指数，国际上常用的衡量人体胖瘦程度以及是否健康的一个标准。</p>
+                </div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.fatRatioRank != 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/zhifanglv.png"/>
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('noFatRatio')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/zhifanglv.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">脂肪率</div>
                 <div style="float:left;width:30%">{{phyIdx.fatRatio || '--'}}%</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.fatRatioRank | fatfilter}}</span>
                 </div>
+                <div style="float:left;width:5%;">{{showDes.noFatRatio | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.noFatRatio" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:240px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.fatRatio1}}%</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">{{phyIdx.fatRatio2}}%</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">{{phyIdx.fatRatio3}}%</div>
+                </div>
+                <div align="center" style="margin-top:0;"><img style="width:240px;" src="img/bz/ct4.png"/></div>
+                <div style="width:240px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏低</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">标准</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏高</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">严重超标</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">保持好的饮食方式和生活习惯是保持健康身材的最佳途径</div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.bmrRank != 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px"
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('noBmr')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px"
                                                                         src="img/jichudaixiangliang.png"/></div>
                 <div style="float:left;width:35%;margin-top:2px">基础代谢量</div>
                 <div style="float:left;width:30%">{{phyIdx.bmr || '--'}}kcal</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.bmrRank | bmrfilter}}</span></div>
+                <div style="float:left;width:5%;">{{showDes.noBmr | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.noBmr" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">
+                    <p>您的标准基础代谢量为{{phyIdx.bmr1}}kcal，处于不达标状态。保持基础代谢量最有效的方式是每天都进行适量的运动</p>
+                    <p>基础代谢量：指人体在非活动状态下，维持生命所需必须消耗的能量。</p>
+                </div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.waterRank != 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/tishuifen.png"/>
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('noWater')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/tishuifen.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">体水分</div>
                 <div style="float:left;width:30%">{{phyIdx.water || '--'}}%</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.waterRank| waterfilter}}</span>
                 </div>
+                <div style="float:left;width:5%;">{{showDes.noWater | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.noWater" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.water1}}%</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">{{phyIdx.water2}}%</div>
+                </div>
+                <div align="center" style="margin-top:0;"><img style="width:180px;" src="img/bz/ct3_z.png"/></div>
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏低</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">标准</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏高</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">适量饮水，均衡饮食，保持身体水分平衡</div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.smrRank != 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/gugejilv.png"/>
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('noSmr')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/gugejilv.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">骨骼肌率</div>
                 <div style="float:left;width:30%">{{phyIdx.smr || '--'}}%</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.smrRank | smrfilter}}</span></div>
+                <div style="float:left;width:5%;">{{showDes.noSmr | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.noSmr" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.smr1}}%</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">{{phyIdx.smr2}}%</div>
+                </div>
+                <div align="center" style="margin-top:0;"><img style="width:180px;" src="img/bz/ct3_z.png"/></div>
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏低</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">标准</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏高</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">人体由多个肌肉组成，其中骨骼肌是可以通过锻炼增加的肌肉</div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.bodyAgeRank != 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/tinianling.png"/>
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('noBodyAge')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/tinianling.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">体年龄</div>
                 <div style="float:left;width:30%">{{phyIdx.bodyAge || '--'}}岁</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.bodyAgeRank | bodyagefilter}}</span>
                 </div>
+                <div style="float:left;width:5%;">{{showDes.noBodyAge | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.noBodyAge" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">理想体年龄＝实际年龄＊2/3</div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.boneWeightRank != 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="width:10%;float:left;margin-top:0.5em"><img style="width:30px" src="img/guliang.png"/></div>
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('noBoneWeight')">
+                <div style="width:25px;float:left;margin-top:0.4em"><img style="width:22px" src="img/guliang.png"/></div>
                 <div style="float:left;width:35%;margin-top:2px">骨量</div>
                 <div style="float:left;width:30%">{{phyIdx.boneWeight || '--'}}kg</div>
                 <div style="float:left;width:20%;"><span
                         style="color:red">{{phyIdx.boneWeightRank | boneweightfilter}}</span></div>
+                <div style="float:left;width:5%;">{{showDes.noBoneWeight | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.noBoneWeight" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.bone1}}kg</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">{{phyIdx.bone2}}kg</div>
+                </div>
+                <div align="center" style="margin-top:0;"><img style="width:180px;" src="img/bz/ct3_z.png"/></div>
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏低</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">标准</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏高</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">骨骼中包含的钙等无机盐的含量非常充分，要注意防范肾结石，低血压的风险，尽量避免高钙摄入</div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.whrRank != 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/yaotunbi.png"/>
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('noWhr')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/yaotunbi.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">腰臀比</div>
                 <div style="float:left;width:30%">{{phyIdx.whr || '--'}}</div>
                 <div style="float:left;width:20%;"><span style="color:red">{{phyIdx.whrRank | whrfilter}}</span></div>
+                <div style="float:left;width:5%;">{{showDes.noWhr | togglefilter}}</div>
             </div>
             <div style="clear:both;height:0px"></div>
-            <div style="background-color:gray;width:100%;height:40px;line-height:2.9em;padding-left:1em;color:green">
+            <div ng-show="showDes.noWhr" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:120px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.whr1}}</div>
+                </div>
+                <div style="clear:both;height:0px"></div>
+                <div align="center" style="margin-top:0;"><img style="width:120px;" src="img/bz/ct2.png"/></div>
+                <div style="width:120px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">达标</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">不达标</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">腰部脂肪会破坏胰岛素系统，而且要不脂肪的新城代谢相当快，还会产生不同的激素，导致糖尿病，高血压，高血脂等疾病。您可以通过进行有氧运动（比如上下楼梯）和腹部运动（比如仰卧起坐）减少腹部脂肪和增加肌肉来降低腰臀比。</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="phyIdx.vflRank != 0"
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('noVfl')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/jichudaixiangliang.png"/>
+                </div>
+                <div style="float:left;width:35%;margin-top:2px">内脏脂肪等级</div>
+                <div style="float:left;width:30%">{{phyIdx.vfl || '--'}}</div>
+                <div style="float:left;width:20%;"><span style="color:green">{{phyIdx.vflRank | vflfilter}}</span>
+                </div>
+                <div style="float:left;width:5%;">{{showDes.noVfl | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.yesVfl" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.vfl1}}</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">{{phyIdx.vfl2}}</div>
+                </div>
+                <div style="clear:both;height:0px"></div>
+                <div align="center" style="margin-top:0;"><img style="width:180px;" src="img/bz/ct3_l.png"/></div>
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">标准</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">超标</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">严重超标</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">内脂肪等级过高就有可能出现高血压,高血脂。</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div style="background-color:gray;width:100%;height:40px;line-height:2.9em;padding-left:0.7em;color:green">
                 本次测试达标项目共{{yesCount}}项
             </div>
             <div ng-show="phyIdx.weightRank == 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/tizhong.png"/>
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                    ng-click="toggleDes('yesWeight')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/tizhong.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">体重</div>
                 <div style="float:left;width:30%">{{phyIdx.weight || '--'}}kg</div>
                 <div style="float:left;width:20%;"><span
                         style="color:green">{{phyIdx.weightRank | weightfilter}}</span></div>
+                <div style="float:left;width:5%;">{{showDes.yesWeight | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.yesWeight" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:300px;margin:0 auto;">
+                    <div style="float:left;width:50px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.weight1}}kg</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">{{phyIdx.weight2}}kg</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">{{phyIdx.weight3}}kg</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">{{phyIdx.weight4}}kg</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">{{phyIdx.weight5}}kg</div>
+                </div>
+                <div align="center" style="margin-top:0;"><img style="width:300px;" src="img/bz/ct6.png"/></div>
+                <div style="width:300px;margin:0 auto;">
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">偏瘦</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">标准</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">超重</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">轻度肥胖</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">中度肥胖</div>
+                    <div style="float:left;width:50px;font-size:0.8em;" align="center">重度肥胖</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">恭喜您拥有理想的体重，保持合理健康的生活方式，适量参与运动，您就可以维持标准体重了</div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.bmiRank == 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/BMI.png"/></div>
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('yesBmi')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/BMI.png"/></div>
                 <div style="float:left;width:35%;margin-top:2px">BMI</div>
                 <div style="float:left;width:30%">{{phyIdx.bmi || '--'}}</div>
                 <div style="float:left;width:20%;"><span style="color:green">{{phyIdx.bmiRank | bmifilter}}</span>
                 </div>
+                <div style="float:left;width:5%;">{{showDes.yesBmi | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.yesBmi" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.bmi1}}</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">{{phyIdx.bmi2}}</div>
+                </div>
+                <div align="center" style="margin-top:0;"><img style="width:180px;" src="img/bz/ct3_z.png"/></div>
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏瘦</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">标准</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">超标</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">
+                    <p>BMI达标，如果腰围也属于建议的尺寸（计算公式：身高（厘米）x 1/2-10＝标准腰围（厘米））就更加理想了</p>
+                    <p>BMI：指身体质量指数，国际上常用的衡量人体胖瘦程度以及是否健康的一个标准。</p>
+                </div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.fatRatioRank == 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/zhifanglv.png"/>
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('yesFatRatio')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/zhifanglv.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">脂肪率</div>
                 <div style="float:left;width:30%">{{phyIdx.fatRatio || '--'}}%</div>
                 <div style="float:left;width:20%;"><span
                         style="color:green">{{phyIdx.fatRatioRank | fatfilter}}</span></div>
+                <div style="float:left;width:5%;">{{showDes.yesFatRatio | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.yesFatRatio" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:240px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.fatRatio1}}%</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">{{phyIdx.fatRatio2}}%</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">{{phyIdx.fatRatio3}}%</div>
+                </div>
+                <div align="center" style="margin-top:0;"><img style="width:240px;" src="img/bz/ct4.png"/></div>
+                <div style="width:240px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏低</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">标准</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏高</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">严重超标</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">保持好的饮食方式和生活习惯是保持健康身材的最佳途径</div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.bmrRank == 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px"
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('yesBmr')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px"
                                                                         src="img/jichudaixiangliang.png"/></div>
                 <div style="float:left;width:35%;margin-top:2px">基础代谢量</div>
                 <div style="float:left;width:30%">{{phyIdx.bmr || '--'}}kcal</div>
                 <div style="float:left;width:20%;"><span style="color:green">{{phyIdx.bmrRank | bmrfilter}}</span>
                 </div>
+                <div style="float:left;width:5%;">{{showDes.yesBmr | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.yesBmr" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">
+                    <p>您的标准基础代谢量为{{phyIdx.bmr1}}kcal，处于达标状态。保持基础代谢量最有效的方式是每天都进行适量的运动</p>
+                    <p>基础代谢量：指人体在非活动状态下，维持生命所需必须消耗的能量。</p>
+                </div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.waterRank == 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/tishuifen.png"/>
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('yesWater')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/tishuifen.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">体水分</div>
                 <div style="float:left;width:30%">{{phyIdx.water || '--'}}%</div>
                 <div style="float:left;width:20%;"><span style="color:green">{{phyIdx.waterRank| waterfilter}}</span>
                 </div>
+                <div style="float:left;width:5%;">{{showDes.yesWater | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.yesWater" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.water1}}%</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">{{phyIdx.water2}}%</div>
+                </div>
+                <div align="center" style="margin-top:0;"><img style="width:180px;" src="img/bz/ct3_z.png"/></div>
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏低</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">标准</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏高</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">适量饮水，均衡饮食，保持身体水分平衡</div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.smrRank == 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/gugejilv.png"/>
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('yesSmr')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/gugejilv.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">骨骼肌率</div>
                 <div style="float:left;width:30%">{{phyIdx.smr || '--'}}%</div>
                 <div style="float:left;width:20%;"><span style="color:green">{{phyIdx.smrRank | smrfilter}}</span>
                 </div>
+                <div style="float:left;width:5%;">{{showDes.yesSmr | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.yesSmr" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.smr1}}%</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">{{phyIdx.smr2}}%</div>
+                </div>
+                <div align="center" style="margin-top:0;"><img style="width:180px;" src="img/bz/ct3_z.png"/></div>
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏低</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">标准</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏高</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">人体由多个肌肉组成，其中骨骼肌是可以通过锻炼增加的肌肉</div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.bodyAgeRank == 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px"
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('yesBodyAge')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px"
                                                                         src="img/tinianling.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">体年龄</div>
                 <div style="float:left;width:30%">{{phyIdx.bodyAge || '--'}}岁</div>
                 <div style="float:left;width:20%;"><span
                         style="color:green">{{phyIdx.bodyAgeRank | bodyagefilter}}</span></div>
+                <div style="float:left;width:5%;">{{showDes.yesBodyAge | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.yesBodyAge" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">理想体年龄＝实际年龄＊2/3</div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.boneWeightRank == 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="width:10%;float:left;margin-top:0.5em"><img style="width:30px" src="img/guliang.png"/>
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('yesBoneWeight')">
+                <div style="width:25px;float:left;margin-top:0.4em"><img style="width:22px" src="img/guliang.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">骨量</div>
                 <div style="float:left;width:30%">{{phyIdx.boneWeight || '--'}}kg</div>
                 <div style="float:left;width:20%;"><span
                         style="color:green">{{phyIdx.boneWeightRank | boneweightfilter}}</span>
                 </div>
+                <div style="float:left;width:5%;">{{showDes.yesBoneWeight | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.yesBoneWeight" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.bone1}}kg</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">{{phyIdx.bone2}}kg</div>
+                </div>
+                <div align="center" style="margin-top:0;"><img style="width:180px;" src="img/bz/ct3_z.png"/></div>
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏低</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">标准</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">偏高</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">骨骼中包含的钙等无机盐的含量非常充分，要注意防范肾结石，低血压的风险，尽量避免高钙摄入</div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div ng-show="phyIdx.whrRank == 0"
-                 style="width:100%;height:50px;font-size:1.2em;padding-left:1em;line-height:2.5em;">
-                <div style="float:left;width:10%;margin-top:0.5em"><img style="width:30px" src="img/yaotunbi.png"/>
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('yesWhr')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/yaotunbi.png"/>
                 </div>
                 <div style="float:left;width:35%;margin-top:2px">腰臀比</div>
                 <div style="float:left;width:30%">{{phyIdx.whr || '--'}}</div>
                 <div style="float:left;width:20%;"><span style="color:green">{{phyIdx.whrRank | whrfilter}}</span>
                 </div>
+                <div style="float:left;width:5%;">{{showDes.yesWhr | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.yesWhr" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:120px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.whr1}}</div>
+                </div>
+                <div style="clear:both;height:0px"></div>
+                <div align="center" style="margin-top:0;"><img style="width:120px;" src="img/bz/ct2.png"/></div>
+                <div style="width:120px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">达标</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">不达标</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">腰部脂肪会破坏胰岛素系统，而且要不脂肪的新城代谢相当快，还会产生不同的激素，导致糖尿病，高血压，高血脂等疾病。您可以通过进行有氧运动（比如上下楼梯）和腹部运动（比如仰卧起坐）减少腹部脂肪和增加肌肉来降低腰臀比。</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="phyIdx.vflRank == 0"
+                 style="width:100%;height:50px;font-size:1.2em;padding-left:0.7em;line-height:2.5em;"
+                 ng-click="toggleDes('yesVfl')">
+                <div style="float:left;width:25px;margin-top:0.4em"><img style="width:22px" src="img/jichudaixiangliang.png"/>
+                </div>
+                <div style="float:left;width:35%;margin-top:2px">内脏脂肪等级</div>
+                <div style="float:left;width:30%">{{phyIdx.vfl || '--'}}</div>
+                <div style="float:left;width:20%;"><span style="color:green">{{phyIdx.vflRank | vflfilter}}</span>
+                </div>
+                <div style="float:left;width:5%;">{{showDes.yesVfl | togglefilter}}</div>
+            </div>
+            <div style="clear:both;height:0px"></div>
+            <div ng-show="showDes.yesVfl" style="width:100%;height:auto;font-size:1.2em;line-height:1em;">
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;margin-left:30px;" align="center">{{phyIdx.vfl1}}</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">{{phyIdx.vfl2}}</div>
+                </div>
+                <div style="clear:both;height:0px"></div>
+                <div align="center" style="margin-top:0;"><img style="width:180px;" src="img/bz/ct3_l.png"/></div>
+                <div style="width:180px;margin:0 auto;">
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">标准</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">超标</div>
+                    <div style="float:left;width:60px;font-size:0.8em;" align="center">严重超标</div>
+                </div>
+                <div style="height:auto;padding:1.5em 1em 1em 1em;font-size:0.9em;">内脂肪等级过高就有可能出现高血压,高血脂。</div>
             </div>
             <div style="clear:both;height:0px"></div>
             <div style="margin: 5px; border-top: 1px solid #ccc; padding-top: 5px;">

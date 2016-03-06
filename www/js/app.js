@@ -35,8 +35,8 @@ angular.module('app',
             animateScale: true
         });
     })
-    .filter('rankfilter', function() {
-        return function(rank) {
+    .filter('rankfilter', function () {
+        return function (rank) {
             if (rank > 0) {
                 return '↑';
             } else if (rank < 0) {
@@ -116,5 +116,17 @@ angular.module('app',
             }
             var dic = ['达标', '不达标'];
             return dic[whrRank];
+        }
+    }).filter('vflfilter', function () {
+        return function (vflRank) {
+            if (!vflRank && vflRank != 0) {
+                vflRank = 1;
+            }
+            var dic = ['达标', '超标', '严重超标'];
+            return dic[vflRank];
+        }
+    }).filter('togglefilter', function () {
+        return function (isShow) {
+            return isShow ? '∧' : '∨';
         }
     });

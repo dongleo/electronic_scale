@@ -158,19 +158,32 @@ services.service('StorageHelper', function ($window) {
                     _smr,
                     _water,
                     _bodyAge,
+                    _vfl,
                     _noFatWeightRank,
                     _whrRank,
                     _bmrRank,
                     _boneWeightRank,
                     _smrRank,
                     _waterRank,
-                    _bodyAgeRank;
+                    _bodyAgeRank,
+                    _vflRank,
+                    _weight1, _weight2, _weight3, _weight4, _weight5,
+                    _bmi1, _bmi2,
+                    _fatRatio1, _fatRatio2, _fatRatio3,
+                    _bmr1,
+                    _water1, _water2,
+                    _smr1, _smr2,
+                    _bone1, _bone2,
+                    _whr1,
+                    _vfl1, _vfl2;
 
                 function _bmiScore() {
                     var bmi = phyIdx.bmi;
-                    if (bmi < 18.5) {
+                    _bmi1 = 18.5;
+                    _bmi2 = 24;
+                    if (bmi < _bmi1) {
                         _bmirank = -1;
-                    } else if (bmi >= 24) {
+                    } else if (bmi >= _bmi2) {
                         _bmirank = 1;
                     } else {
                         _bmirank = 0;
@@ -180,16 +193,20 @@ services.service('StorageHelper', function ($window) {
                 function _weightScore() {
                     var weight = phyIdx.weight;
                     var standard = _get_standard_weight();
-                    var ratio = (weight - standard) / standard;
-                    if (ratio <= 0.1 && ratio >= -0.1) {
-                        _weightrank = 0;
-                    } else if (ratio < -0.1) {
+                    _weight1 = (standard * 0.9).toFixed(1);
+                    _weight2 = (standard * 1.1).toFixed(1);
+                    _weight3 = (standard * 1.2).toFixed(1);
+                    _weight4 = (standard * 1.3).toFixed(1);
+                    _weight5 = (standard * 1.5).toFixed(1);
+                    if (weight < _weight1) {
                         _weightrank = -1;
-                    } else if (ratio <= 0.2) {
+                    } else if (weight < _weight2) {
+                        _weightrank = 0;
+                    } else if (weight < _weight3) {
                         _weightrank = 1;
-                    } else if (ratio <= 0.3) {
+                    } else if (weight < _weight4) {
                         _weightrank = 2;
-                    } else if (ratio <= 0.5) {
+                    } else if (weight < _weight5) {
                         _weightrank = 3;
                     } else {
                         _weightrank = 4;
@@ -210,11 +227,14 @@ services.service('StorageHelper', function ($window) {
                     var funs = [femalefatscore, malefatscore];
 
                     function malefatscore() {
-                        if (phyIdx.fatRatio <= 11) {
+                        _fatRatio1 = 11;
+                        _fatRatio2 = 20;
+                        _fatRatio3 = 25;
+                        if (phyIdx.fatRatio <= _fatRatio1) {
                             _fatratiorank = -1;
-                        } else if (phyIdx.fatRatio <= 20) {
+                        } else if (phyIdx.fatRatio <= _fatRatio2) {
                             _fatratiorank = 0;
-                        } else if (phyIdx.fatRatio <= 25) {
+                        } else if (phyIdx.fatRatio <= _fatRatio3) {
                             _fatratiorank = 1;
                         } else {
                             _fatratiorank = 2;
@@ -222,11 +242,14 @@ services.service('StorageHelper', function ($window) {
                     }
 
                     function femalefatscore() {
-                        if (phyIdx.fatRatio <= 21) {
+                        _fatRatio1 = 21;
+                        _fatRatio2 = 25;
+                        _fatRatio3 = 30;
+                        if (phyIdx.fatRatio <= _fatRatio1) {
                             _fatratiorank = -1;
-                        } else if (phyIdx.fatRatio <= 25) {
+                        } else if (phyIdx.fatRatio <= _fatRatio2) {
                             _fatratiorank = 0;
-                        } else if (phyIdx.fatRatio <= 30) {
+                        } else if (phyIdx.fatRatio <= _fatRatio3) {
                             _fatratiorank = 1;
                         } else {
                             _fatratiorank = 2;
@@ -324,7 +347,8 @@ services.service('StorageHelper', function ($window) {
                     var calBmrs = [femaleBmr, maleBmr];
                     var standards = [femaleStandardBmr, maleStandardBmr];
                     _bmr = calBmrs[userData.gender]().toFixed(1);
-                    if (_bmr >= standards[userData.gender]()) {
+                    _bmr1 = standards[userData.gender]();
+                    if (_bmr >= _bmr1) {
                         _bmrRank = 0;
                     } else {
                         _bmrRank = -1;
@@ -333,7 +357,8 @@ services.service('StorageHelper', function ($window) {
 
                 function _whrScore() {
                     function maleWhrScore(whr) {
-                        if (whr >= 0.9) {
+                        _whr1 = 0.9;
+                        if (whr >= _whr1) {
                             _whrRank = 1;
                         } else {
                             _whrRank = 0;
@@ -341,7 +366,8 @@ services.service('StorageHelper', function ($window) {
                     }
 
                     function femaleWhrScore(whr) {
-                        if (whr >= 0.85) {
+                        _whr1 = 0.9;
+                        if (whr >= _whr1) {
                             _whrRank = 1;
                         } else {
                             _whrRank = 0;
@@ -384,105 +410,59 @@ services.service('StorageHelper', function ($window) {
 
                     function _maleBoneWeightRank(bw) {
                         if (userData.age < 21) {
-                            if (bw < 2.0) {
-                                _boneWeightRank = -1;
-                            } else if (bw < 4.1) {
-                                _boneWeightRank = 0;
-                            } else {
-                                _boneWeightRank = 1;
-                            }
+                            _bone1 = 2.0;
+                            _bone2 = 4.1;
                         } else if (userData.age < 30) {
-                            if (bw < 2.1) {
-                                _boneWeightRank = -1;
-                            } else if (bw < 4.0) {
-                                _boneWeightRank = 0;
-                            } else {
-                                _boneWeightRank = 1;
-                            }
+                            _bone1 = 2.1;
+                            _bone2 = 4.0;
                         } else if (userData.age < 40) {
-                            if (bw < 1.8) {
-                                _boneWeightRank = -1;
-                            } else if (bw < 4.0) {
-                                _boneWeightRank = 0;
-                            } else {
-                                _boneWeightRank = 1;
-                            }
+                            _bone1 = 1.8;
+                            _bone2 = 4.0;
                         } else if (userData.age < 50) {
-                            if (bw < 1.9) {
-                                _boneWeightRank = -1;
-                            } else if (bw < 3.8) {
-                                _boneWeightRank = 0;
-                            } else {
-                                _boneWeightRank = 1;
-                            }
+                            _bone1 = 1.9;
+                            _bone2 = 3.8;
                         } else if (userData.age < 60) {
-                            if (bw < 1.9) {
-                                _boneWeightRank = -1;
-                            } else if (bw < 3.7) {
-                                _boneWeightRank = 0;
-                            } else {
-                                _boneWeightRank = 1;
-                            }
+                            _bone1 = 1.9;
+                            _bone2 = 3.7;
                         } else {
-                            if (bw < 1.6) {
-                                _boneWeightRank = -1;
-                            } else if (bw < 3.7) {
-                                _boneWeightRank = 0;
-                            } else {
-                                _boneWeightRank = 1;
-                            }
+                            _bone1 = 1.6;
+                            _bone2 = 3.7;
+                        }
+                        if (bw < _bone1) {
+                            _boneWeightRank = -1;
+                        } else if (bw < _bone2) {
+                            _boneWeightRank = 0;
+                        } else {
+                            _boneWeightRank = 1;
                         }
                     }
 
                     function _femaleBoneWeightRank(bw) {
                         if (userData.age < 21) {
-                            if (bw < 1.8) {
-                                _boneWeightRank = -1;
-                            } else if (bw < 3.9) {
-                                _boneWeightRank = 0;
-                            } else {
-                                _boneWeightRank = 1;
-                            }
+                            _bone1 = 1.8;
+                            _bone2 = 3.9;
                         } else if (userData.age < 30) {
-                            if (bw < 1.8) {
-                                _boneWeightRank = -1;
-                            } else if (bw < 3.8) {
-                                _boneWeightRank = 0;
-                            } else {
-                                _boneWeightRank = 1;
-                            }
+                            _bone1 = 1.8;
+                            _bone2 = 3.8;
                         } else if (userData.age < 40) {
-                            if (bw < 1.5) {
-                                _boneWeightRank = -1;
-                            } else if (bw < 3.8) {
-                                _boneWeightRank = 0;
-                            } else {
-                                _boneWeightRank = 1;
-                            }
+                            _bone1 = 1.5;
+                            _bone2 = 3.8;
                         } else if (userData.age < 50) {
-                            if (bw < 1.6) {
-                                _boneWeightRank = -1;
-                            } else if (bw < 3.7) {
-                                _boneWeightRank = 0;
-                            } else {
-                                _boneWeightRank = 1;
-                            }
+                            _bone1 = 1.6;
+                            _bone2 = 3.7;
                         } else if (userData.age < 60) {
-                            if (bw < 1.5) {
-                                _boneWeightRank = -1;
-                            } else if (bw < 3.6) {
-                                _boneWeightRank = 0;
-                            } else {
-                                _boneWeightRank = 1;
-                            }
+                            _bone1 = 1.5;
+                            _bone2 = 3.6;
                         } else {
-                            if (bw < 1.3) {
-                                _boneWeightRank = -1;
-                            } else if (bw < 3.5) {
-                                _boneWeightRank = 0;
-                            } else {
-                                _boneWeightRank = 1;
-                            }
+                            _bone1 = 1.3;
+                            _bone2 = 3.5;
+                        }
+                        if (bw < _bone1) {
+                            _boneWeightRank = -1;
+                        } else if (bw < _bone2) {
+                            _boneWeightRank = 0;
+                        } else {
+                            _boneWeightRank = 1;
                         }
                     }
 
@@ -499,9 +479,11 @@ services.service('StorageHelper', function ($window) {
                     }
 
                     function _maleSmrRank() {
-                        if (_smr < 49) {
+                        _smr1 = 49;
+                        _smr2 = 59;
+                        if (_smr < _smr1) {
                             _smrRank = -1;
-                        } else if (_smr < 59) {
+                        } else if (_smr < _smr2) {
                             _smrRank = 0;
                         } else {
                             _smrRank = 1;
@@ -509,9 +491,11 @@ services.service('StorageHelper', function ($window) {
                     }
 
                     function _femaleSmrRank() {
-                        if (_smr < 40) {
+                        _smr1 = 40;
+                        _smr2 = 50;
+                        if (_smr < _smr1) {
                             _smrRank = -1;
-                        } else if (_smr < 50) {
+                        } else if (_smr < _smr2) {
                             _smrRank = 0;
                         } else {
                             _smrRank = 1;
@@ -582,89 +566,53 @@ services.service('StorageHelper', function ($window) {
 
                     function _maleWaterRank(water) {
                         if (userData.age < 17) {
-                            if (water < 57) {
-                                _waterRank = -1;
-                            } else if (water < 62) {
-                                _waterRank = 0;
-                            } else {
-                                _waterRank = 1;
-                            }
+                            _water1 = 57;
+                            _water2 = 62;
                         } else if (userData.age < 30) {
-                            if (water < 56.5) {
-                                _waterRank = -1;
-                            } else if (water < 61.5) {
-                                _waterRank = 0;
-                            } else {
-                                _waterRank = 1;
-                            }
+                            _water1 = 56.5;
+                            _water2 = 61.5;
                         } else if (userData.age < 40) {
-                            if (water < 56) {
-                                _waterRank = -1;
-                            } else if (water < 61) {
-                                _waterRank = 0;
-                            } else {
-                                _waterRank = 1;
-                            }
+                            _water1 = 56;
+                            _water2 = 61;
                         } else if (userData.age < 60) {
-                            if (water < 55.5) {
-                                _waterRank = -1;
-                            } else if (water < 60.5) {
-                                _waterRank = 0;
-                            } else {
-                                _waterRank = 1;
-                            }
+                            _water1 = 55.5;
+                            _water2 = 60.5;
                         } else if (userData.age < 99) {
-                            if (water < 55) {
-                                _waterRank = -1;
-                            } else if (water < 60) {
-                                _waterRank = 0;
-                            } else {
-                                _waterRank = 1;
-                            }
+                            _water1 = 55;
+                            _water2 = 60;
+                        }
+                        if (water < _water1) {
+                            _waterRank = -1;
+                        } else if (water < _water2) {
+                            _waterRank = 0;
+                        } else {
+                            _waterRank = 1;
                         }
                     }
 
                     function _femaleWaterRank(water) {
                         if (userData.age < 17) {
-                            if (water < 54) {
-                                _waterRank = -1;
-                            } else if (water < 60) {
-                                _waterRank = 0;
-                            } else {
-                                _waterRank = 1;
-                            }
+                            _water1 = 54;
+                            _water2 = 60;
                         } else if (userData.age < 30) {
-                            if (water < 53.5) {
-                                _waterRank = -1;
-                            } else if (water < 59.5) {
-                                _waterRank = 0;
-                            } else {
-                                _waterRank = 1;
-                            }
+                            _water1 = 53.5;
+                            _water2 = 59.5;
                         } else if (userData.age < 40) {
-                            if (water < 53) {
-                                _waterRank = -1;
-                            } else if (water < 59) {
-                                _waterRank = 0;
-                            } else {
-                                _waterRank = 1;
-                            }
+                            _water1 = 53;
+                            _water2 = 59;
                         } else if (userData.age < 60) {
-                            if (water < 52.5) {
-                                _waterRank = -1;
-                            } else if (water < 58.5) {
-                                _waterRank = 0;
-                            } else {
-                                _waterRank = 1;
-                            }
+                            _water1 = 52.5;
+                            _water2 = 58.5;
                         } else if (userData.age < 99) {
-                            if (water < 52) {
-                                _waterRank = -1;
-                            } else if (water < 58) {
-                                _waterRank = 0;
-                            } else {
-                                _waterRank = 1;
-                            }
+                            _water1 = 52;
+                            _water2 = 58;
+                        }
+                        if (water < _water1) {
+                            _waterRank = -1;
+                        } else if (water < _water2) {
+                            _waterRank = 0;
+                        } else {
+                            _waterRank = 1;
                         }
                     }
 
@@ -771,6 +719,50 @@ services.service('StorageHelper', function ($window) {
                     }
                 }
 
+                function _calcVflScore() {
+                    if (phyIdx.bmi < 18.6) {
+                        _vfl = 2;
+                    } else if (phyIdx.bmi < 19.5) {
+                        _vfl = 3;
+                    } else if (phyIdx.bmi < 20.5) {
+                        _vfl = 4;
+                    } else if (phyIdx.bmi < 21.5) {
+                        _vfl = 5;
+                    } else if (phyIdx.bmi < 22.5) {
+                        _vfl = 6;
+                    } else if (phyIdx.bmi < 23.5) {
+                        _vfl = 7;
+                    } else if (phyIdx.bmi < 24.5) {
+                        _vfl = 8;
+                    } else if (phyIdx.bmi < 26.5) {
+                        _vfl = 9;
+                    } else if (phyIdx.bmi < 27.5) {
+                        _vfl = 10;
+                    } else if (phyIdx.bmi < 28.5) {
+                        _vfl = 11;
+                    } else if (phyIdx.bmi < 29.5) {
+                        _vfl = 12;
+                    } else if (phyIdx.bmi < 30.5) {
+                        _vfl = 13;
+                    } else if (phyIdx.bmi < 31.5) {
+                        _vfl = 14;
+                    } else if (phyIdx.bmi < 32.5) {
+                        _vfl = 15;
+                    } else {
+                        _vfl = 16;
+                    }
+
+                    _vfl1 = 9;
+                    _vfl2 = 14;
+                    if (_vfl <= _vfl1) {
+                        _vflRank = 0;
+                    } else if (_vfl <= _vfl2) {
+                        _vflRank = 1;
+                    } else {
+                        _vflRank = 2;
+                    }
+                }
+
                 _bmiScore();
                 _weightScore();
                 _fatratioScore();
@@ -781,6 +773,7 @@ services.service('StorageHelper', function ($window) {
                 _smrScore();
                 _waterScore();
                 _bodyAgeScore();
+                _calcVflScore();
 
                 phyIdx.score = _calcScore();
                 phyIdx.scoreRatio = _calcScoreRatio(phyIdx.score);
@@ -797,6 +790,7 @@ services.service('StorageHelper', function ($window) {
                 phyIdx.smr = _smr;
                 phyIdx.water = _water;
                 phyIdx.bodyAge = _bodyAge;
+                phyIdx.vfl = _vfl;
                 phyIdx.noFatWeightRank = _noFatWeightRank;
                 phyIdx.whrRank = _whrRank;
                 phyIdx.bmrRank = _bmrRank;
@@ -804,6 +798,28 @@ services.service('StorageHelper', function ($window) {
                 phyIdx.smrRank = _smrRank;
                 phyIdx.waterRank = _waterRank;
                 phyIdx.bodyAgeRank = _bodyAgeRank;
+                phyIdx.vflRank = _vflRank;
+
+                phyIdx.weight1 = _weight1;
+                phyIdx.weight2 = _weight2;
+                phyIdx.weight3 = _weight3;
+                phyIdx.weight4 = _weight4;
+                phyIdx.weight5 = _weight5;
+                phyIdx.bmi1 = _bmi1;
+                phyIdx.bmi2 = _bmi2;
+                phyIdx.fatRatio1 = _fatRatio1;
+                phyIdx.fatRatio2 = _fatRatio2;
+                phyIdx.fatRatio3 = _fatRatio3;
+                phyIdx.bmr1 = _bmr1;
+                phyIdx.water1 = _water1;
+                phyIdx.water2 = _water2;
+                phyIdx.smr1 = _smr1;
+                phyIdx.smr2 = _smr2;
+                phyIdx.bone1 = _bone1;
+                phyIdx.bone2 = _bone2;
+                phyIdx.whr1 = _whr1;
+                phyIdx.vfl1 = _vfl1;
+                phyIdx.vfl2 = _vfl2;
 
                 return phyIdx;
             },
