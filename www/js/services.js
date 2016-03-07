@@ -366,7 +366,7 @@ services.service('StorageHelper', function ($window) {
                     }
 
                     function femaleWhrScore(whr) {
-                        _whr1 = 0.9;
+                        _whr1 = 0.85;
                         if (whr >= _whr1) {
                             _whrRank = 1;
                         } else {
@@ -664,17 +664,17 @@ services.service('StorageHelper', function ($window) {
                 function _calcScore() {
                     var s;
                     if (phyIdx.bmi < 21.3) {
-                        s = 99 * phyIdx.bmi / 21.2;
+                        s = 94 * phyIdx.bmi / 21.2;
                     } else if (phyIdx.bmi < 23.9) {
-                        s = 99 * 21.2 / phyIdx.bmi;
+                        s = 94 * 21.2 / phyIdx.bmi;
                     } else if (phyIdx.bmi < 25.9) {
-                        s = 96 * 21.2 / phyIdx.bmi;
+                        s = 91 * 21.2 / phyIdx.bmi;
                     } else if (phyIdx.bmi < 27.9) {
-                        s = 93 * 21.2 / phyIdx.bmi;
+                        s = 88 * 21.2 / phyIdx.bmi;
                     } else if (phyIdx.bmi < 29.9) {
-                        s = 89 * 21.2 / phyIdx.bmi;
+                        s = 84 * 21.2 / phyIdx.bmi;
                     } else {
-                        s = 85 * 21.2 / phyIdx.bmi;
+                        s = 81 * 21.2 / phyIdx.bmi;
                     }
                     return s.toFixed(1);
                 }

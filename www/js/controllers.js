@@ -700,7 +700,11 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
                         var idx = list[i];
 
                         if (idx.submitTime) {
-                            $scope.chartLabels[i] = idx.submitTime;
+                            if ($scope.mode == 'MONTH' || idx.submitTime == 1 || idx.submitTime%5 == 0) {
+                                $scope.chartLabels[i] = idx.submitTime;
+                            } else {
+                                $scope.chartLabels[i] = '';
+                            }
                             /*$scope.weight.chartData[0][i] = idx.weight.toFixed(1) || 0;
                              $scope.bmi.chartData[0][i] = idx.bmi.toFixed(1) || 0;
                              $scope.fatRatio.chartData[0][i] = idx.fatRatio.toFixed(1) || 0;*/
