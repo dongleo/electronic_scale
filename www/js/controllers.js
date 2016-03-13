@@ -122,7 +122,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
     })
 
-    .controller('checkCtrl', function ($scope, $ionicPlatform, $state, $ionicPopup, BleService, AccountService, PhyIndexService, StorageHelper, BleManager, Conf) {
+    .controller('checkCtrl', function ($scope, $ionicPlatform, $state, $ionicPopup, $timeout, BleService, AccountService, PhyIndexService, StorageHelper, BleManager, Conf) {
         $scope.goToEdit = function () {
             $state.go('edit');
         };
@@ -150,15 +150,25 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             }
         };
         $scope.scan = function () {
+            $scope.bleStatus = 1;
             BleService.startScan(function (device) {
                 if (BleManager.exist(device)) {
                     $scope.connect(device, $scope.connectFail);
                 }
             }, function () {
+                $scope.bleStatus = 2;
             });
+            $timeout(function () {
+                if ($scope.bleStatus == 1) {
+                    $scope.bleStatus = 2;
+                    BleService.stopScan();
+                }
+            }, Conf.SCAN_TIMEOUT * 1000);
         };
         $scope.connect = function (device, failure) {
+            $scope.bleStatus = 3;
             BleService.connect(device.id, function () {
+                $scope.bleStatus = 5;
                 $ionicPopup.alert({
                     title: '提示',
                     template: '请站上秤开始健康之旅！'
@@ -173,34 +183,40 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
             BleService.startNotification($scope.receiveData);
         };
         $scope.receiveData = function (data) {
-            if (data.head == Conf.LOCK_HEAD && !$scope.bleData) {
-                $scope.bleData = data;
-                $scope.phyIdx.weight = parseInt(data.LockWeight, 16) / 10;
-                $scope.phyIdx.bmi = PhyIndexService.calcBMI($scope.phyIdx, $scope.data);
-                $scope.phyIdx.fatRatio = PhyIndexService.calcFatRatio($scope.phyIdx, $scope.data);
-
-                $scope.phyIdx = PhyIndexService.calcPhyIdx($scope.phyIdx, $scope.data);
-                PhyIndexService.set($scope.data.accountId, $scope.phyIdx);
-
-                //StorageHelper.setObject('userData', $scope.data);
-                $scope.data.score = $scope.phyIdx.score;
-                $scope.data.scoreRatio = $scope.phyIdx.scoreRatio;
-
-                PhyIndexService.submit($scope.phyIdx, $scope.data).success(function (response) {
-                    if ($scope.waitToScale)
-                        $scope.waitToScale = false;
-                    if (response.success) {
-                        //$scope.data.scoreRatio = response.data.scoreRatio;
-                        $scope.calcScoreRank();
-
-                        StorageHelper.setObject('userData', $scope.data);
-                    }
-                }).error(function () {
+            if (data.head == Conf.LOCK_HEAD) {
+                var _weight = parseInt(data.LockWeight, 16) / 10;
+                if ($scope.phyIdx.weight != _weight) {
                     $ionicPopup.alert({
                         title: '提示',
-                        template: '网络不可用'
+                        template: '成功获取身体信息，请下秤！'
                     });
-                });
+                    $scope.phyIdx.weight = parseInt(data.LockWeight, 16) / 10;
+                    $scope.phyIdx.bmi = PhyIndexService.calcBMI($scope.phyIdx, $scope.data);
+                    $scope.phyIdx.fatRatio = PhyIndexService.calcFatRatio($scope.phyIdx, $scope.data);
+
+                    $scope.phyIdx = PhyIndexService.calcPhyIdx($scope.phyIdx, $scope.data);
+                    PhyIndexService.set($scope.data.accountId, $scope.phyIdx);
+
+                    //StorageHelper.setObject('userData', $scope.data);
+                    $scope.data.score = $scope.phyIdx.score;
+                    $scope.data.scoreRatio = $scope.phyIdx.scoreRatio;
+
+                    PhyIndexService.submit($scope.phyIdx, $scope.data).success(function (response) {
+                        if ($scope.waitToScale)
+                            $scope.waitToScale = false;
+                        if (response.success) {
+                            //$scope.data.scoreRatio = response.data.scoreRatio;
+                            $scope.calcScoreRank();
+
+                            StorageHelper.setObject('userData', $scope.data);
+                        }
+                    }).error(function () {
+                        $ionicPopup.alert({
+                            title: '提示',
+                            template: '网络不可用'
+                        });
+                    });
+                }
             }
         };
 
@@ -224,7 +240,9 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
 
         $scope.connectFail = function () {
+            $scope.bleStatus = 4;
         };
+        $scope.bleStatus = 0;
         $scope.$on('$ionicView.beforeEnter', function () {
             $scope.bleData = null;
             if (BleManager.selectedBle) {
@@ -285,6 +303,7 @@ controllers.controller('loginCtrl', function ($scope, $state, $ionicPopup, $ioni
         };
         $scope.scanEnd = function () {
             $ionicLoading.hide();
+            BleService.stopScan();
             if ($scope.bleList.length == 0) {
                 $scope.show = true;
             }

@@ -129,4 +129,12 @@ angular.module('app',
         return function (isShow) {
             return isShow ? '∧' : '∨';
         }
+    }).filter('blestatusfilter', function () {
+        return function (bleStatus) {
+            return ['&#xe637;', '&#xe636;'][bleStatus];
+        }
+    }).filter('blestatusdesfilter', function () {
+        return function (bleStatus) {
+            return ['未连接', '扫描中', '没有扫描到设备', '连接中', '连接失败', '已连接'][bleStatus];
+        }
     });

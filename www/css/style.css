@@ -184,3 +184,15 @@
     background-color: #e5e5e5;
     box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
 }
+
+.ble_status {
+    position: absolute; top: -25px; left: 5px;
+}
+
+.ble_status0,.ble_status2,.ble_status4 {
+    color: red;
+}
+
+.ble_status1,.ble_status3,.ble_status5 {
+    color: green;
+}

@@ -8,6 +8,10 @@
         </ion-nav-buttons>
     </ion-nav-bar>
     <ion-content padding="false" class="has-header">
+        <div class="ble_status ble_status{{bleStatus}}">
+            <i class="icon ion-bluetooth"></i>
+            <span>{{bleStatus | blestatusdesfilter}}</span>
+        </div>
         <div style="width: 80%;margin: 14% auto 0;">
             <div>
                 <img src="img/phy_idx{{phyIdx.scoreRank || '1'}}.png" style="width:100%"/>
